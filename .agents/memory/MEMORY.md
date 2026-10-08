@@ -1,1 +1,2 @@
 - [Full-page image screenshots](full-page-image-screenshots.md) — blank thumbnails in long captures can be a screenshot artifact; check their URLs and source files before changing the page.
+- [GitHub source-control authorization](github-source-control-auth.md) — verify remote write access early; a successful integration bind may not mean GitHub pushes work.
