@@ -17,7 +17,7 @@ run = "pnpm --filter @workspace/design-saada run dev"
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/design-saada", "run", "build" ]
 serve = "static"
-publicDir = "artifacts/design-saada/dist/public"
+publicDir = "artifacts/design-saada/dist"
 
 [[services.production.rewrites]]
 from = "/*"
