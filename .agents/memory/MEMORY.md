@@ -1,0 +1,1 @@
+- [Full-page image screenshots](full-page-image-screenshots.md) — blank thumbnails in long captures can be a screenshot artifact; check their URLs and source files before changing the page.

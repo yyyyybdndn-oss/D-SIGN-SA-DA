@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Désign Saâda | Chez Tapissier Moderne - المحمدية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        luxury: {
+                            gold: '#d4af37',
+                            dark: '#0f0f0f',
+                            card: '#161616',
+                            border: '#2a2a2a',
+                            accent: '#8b5a2b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Three.js for 3D Particle Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #0f0f0f; color: #f3f4f6; overflow-x: hidden; }
+        .glass-nav { background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .glass-card { background: rgba(22, 22, 22, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .card-tilt { transform-style: preserve-style; transition: transform 0.1s ease-out; }
+        #canvas3d { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    </style>
+</head>
+<body class="bg-luxury-dark text-gray-100 selection:bg-luxury-gold selection:text-black">
+
+    <!-- 3D Background Canvas Container -->
+    <div id="canvas-container" class="absolute top-0 left-0 w-full h-[100vh] overflow-hidden pointer-events-none">
+        <canvas id="canvas3d"></canvas>
+    </div>
+
+    <!-- Top Bar & Language Selector -->
+    <div class="bg-[#121212] border-b border-luxury-border text-xs py-2 px-4 relative z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4 text-luxury-gold">
+                <span><i class="fa-solid fa-location-dot ml-1"></i> المحمدية، المغرب</span>
+                <span class="hidden sm:inline"><i class="fa-solid fa-truck ml-1"></i> توصيل لجميع أنحاء المملكة</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-[#1e1e1e] text-gray-200 border border-luxury-border rounded px-2 py-1 outline-none focus:border-luxury-gold">
+                    <option value="ar">العربية (Morocco)</option>
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="de">Deutsch</option>
+                    <option value="it">Italiano</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="ar-sa">العربية (فصحى)</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="zh">中文</option>
+                </select>
+                <a href="https://wa.me/212656593754" target="_blank" class="text-green-400 hover:text-green-300 font-bold flex items-center gap-1">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> 0656593754
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="glass-nav sticky top-0 z-40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-12 h-12 bg-gradient-to-tr from-luxury-accent to-luxury-gold rounded-full flex items-center justify-center text-black font-black text-xl shadow-lg shadow-luxury-gold/20">
+                    DS
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-wider text-luxury-gold">DÉSIGN SAÂDA</h1>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Chez Tapissier Moderne</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-8 space-x-reverse font-semibold text-sm text-gray-300">
+                <a href="#home" class="hover:text-luxury-gold transition" data-i18n="nav_home">الرئيسية</a>
+                <a href="#gallery" class="hover:text-luxury-gold transition" data-i18n="nav_gallery">معرض التحف والخدمات</a>
+                <a href="#about" class="hover:text-luxury-gold transition" data-i18n="nav_about">من نحن</a>
+                <a href="#contact" class="hover:text-luxury-gold transition" data-i18n="nav_contact">تواصل معنا</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <!-- Cart Button -->
+                <button onclick="toggleCart()" class="relative bg-luxury-card border border-luxury-border hover:border-luxury-gold p-2.5 rounded-xl text-luxury-gold transition flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartCount" class="absolute -top-2 -right-2 bg-luxury-gold text-black font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section with 3D Parallax & Typography -->
+    <section id="home" class="relative min-h-[90vh] flex items-center justify-center text-center px-4 overflow-hidden pt-12 pb-20 z-10">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="inline-flex items-center gap-2 bg-luxury-gold/10 border border-luxury-gold/30 px-4 py-1.5 rounded-full text-luxury-gold text-xs font-bold tracking-widest mb-6 animate-pulse">
+                <i class="fa-solid fa-crown"></i> <span data-i18n="hero_badge">أرقى تصاميم التنجيد والأثاث العصري بالمغرب</span>
+            </div>
+            <h2 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight mb-6 leading-tight text-white drop-shadow-lg" data-i18n="hero_title">
+                فخامة الصالونات العصرية <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-luxury-gold via-yellow-200 to-amber-600">بصمة ملكية لمنزلك</span>
+            </h2>
+            <p class="text-base sm:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed" data-i18n="hero_desc">
+                اكتشف تشكيلة حصرية لـ 18 منتجاً ومنحوتة فنية في التنجيد، الصالونات، وحدات التلفاز، والمطابخ بتصاميم عالمية ومعايير جودة لا تُضاهى.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#gallery" class="bg-gradient-to-r from-luxury-gold to-yellow-600 text-black font-bold px-8 py-4 rounded-xl shadow-xl hover:opacity-90 transition transform hover:-translate-y-1" data-i18n="hero_btn_explore">
+                    استكشف المعرض الفاخر
+                </a>
+                <a href="https://wa.me/212656593754" target="_blank" class="border border-luxury-border bg-luxury-card/80 hover:bg-luxury-border text-white font-bold px-8 py-4 rounded-xl backdrop-blur transition flex items-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-green-400 text-lg"></i> <span data-i18n="hero_btn_wa">طلب استشارة خاصة</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Products & Gallery Section (18 Items with Detailed Cards) -->
+    <section id="gallery" class="py-20 px-4 max-w-7xl mx-auto relative z-20">
+        <div class="text-center mb-16">
+            <h3 class="text-3xl sm:text-5xl font-black text-white mb-4" data-i18n="gallery_title">معرض الأعمال والتحف الفخمة</h3>
+            <p class="text-gray-400 max-w-xl mx-auto text-sm sm:text-base" data-i18n="gallery_subtitle">انقر على أي صورة لتفعيل خاصية الزووم التفاعلي، أو اضغط على أضف للسلة لطلب التفصيل حسب القياسات.</p>
+        </div>
+
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Items injected dynamically via JavaScript to ensure complete 18 items precision -->
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-[#121212] border-t border-luxury-border relative z-20">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="text-luxury-gold font-bold text-sm tracking-widest uppercase" data-i18n="about_tag">من نحن</span>
+                <h3 class="text-3xl sm:text-4xl font-black text-white mt-2 mb-6" data-i18n="about_title">Désign Saâda - خبرة طويلة في عالم التنجيد العصري والديكور</h3>
+                <p class="text-gray-300 leading-relaxed mb-4 text-sm sm:text-base" data-i18n="about_desc1">
+                    مقرنا الرئيسي في مدينة المحمدية، ونقدم خدماتنا الراقية وتوصيلنا المضمون لجميع مدن المغرب. نحن متخصصون في تفصيل الصالونات العصرية، الكراسي الفاخرة (Fauteuils)، تجهيز وحدات التلفاز، المطابخ، والستائر الذكية بأجود أنواع الأثواب الخالدة (الموبرة، البهجة، البوكلي) وأفخر أنواع الخشب الصلب.
+                </p>
+                <p class="text-gray-400 text-sm mb-6" data-i18n="about_desc2">
+                    نضمن لك دقة في التفصيل، التزام بالمواعيد، ولمسة جمالية تجعل منزلك تحفة فنية تنطق بالفخامة.
+                </p>
+                <div class="flex gap-6 text-luxury-gold font-bold">
+                    <div><span class="text-2xl block text-white">+18</span> <span data-i18n="stat_designs">تصميم حصري</span></div>
+                    <div><span class="text-2xl block text-white">100%</span> <span data-i18n="stat_quality">جودة مضمونة</span></div>
+                    <div><span class="text-2xl block text-white">إلى كل المغرب</span> <span data-i18n="stat_delivery">توصيل آمن</span></div>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="absolute -inset-2 bg-gradient-to-r from-luxury-gold to-amber-700 rounded-3xl blur opacity-25"></div>
+                <div class="relative rounded-2xl overflow-hidden border border-luxury-border shadow-2xl">
+                    <img src="1000078693.jpg" alt="About Design Saada" class="w-full h-[400px] object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-[#0b0b0b] border-t border-luxury-border py-16 px-4 relative z-20 text-gray-400 text-sm">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+            <div>
+                <h4 class="text-lg font-bold text-luxury-gold mb-4">DÉSIGN SAÂDA</h4>
+                <p class="text-gray-400 text-xs leading-relaxed mb-4" data-i18n="footer_desc">المرجع الأول للأثاث العصري والتنجيد الفاخر بالمحمدية، مع خدمة التوصيل لجميع مدن المملكة المغربية.</p>
+                <p class="text-white font-bold text-xs"><i class="fa-solid fa-phone text-luxury-gold ml-2"></i> 0656593754</p>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-luxury-gold mb-4" data-i18n="footer_links">روابط سريعة</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#home" class="hover:text-luxury-gold transition" data-i18n="nav_home">الرئيسية</a></li>
+                    <li><a href="#gallery" class="hover:text-luxury-gold transition" data-i18n="nav_gallery">معرض التحف</a></li>
+                    <li><a href="#about" class="hover:text-luxury-gold transition" data-i18n="nav_about">من نحن</a></li>
+                    <li><a href="https://wa.me/212656593754" target="_blank" class="hover:text-luxury-gold transition" data-i18n="nav_contact">واتساب المباشر</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-luxury-gold mb-4" data-i18n="footer_social">تابعنا على السوشيال ميديا</h4>
+                <div class="flex gap-4 text-xl mb-4">
+                    <a href="https://www.instagram.com/soufiane_tapissier_" target="_blank" class="w-10 h-10 rounded-full bg-luxury-card border border-luxury-border flex items-center justify-center text-luxury-gold hover:bg-luxury-gold hover:text-black transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@soufianetapissier" target="_blank" class="w-10 h-10 rounded-full bg-luxury-card border border-luxury-border flex items-center justify-center text-luxury-gold hover:bg-luxury-gold hover:text-black transition"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://wa.me/212656593754" target="_blank" class="w-10 h-10 rounded-full bg-luxury-card border border-luxury-border flex items-center justify-center text-green-500 hover:bg-green-500 hover:text-black transition"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+                <p class="text-[11px] text-gray-500">Instagram: @soufiane_tapissier_ | TikTok: @soufianetapissier</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-luxury-border pt-6 text-center text-xs text-gray-500">
+            &copy; 2026 Désign Saâda. All Rights Reserved. Designed with Elite Pro Services.
+        </div>
+    </footer>
+
+    <!-- Advanced Cart Drawer (Sidebar) -->
+    <div id="cartDrawer" class="fixed inset-y-0 right-0 w-full sm:w-[450px] bg-[#141414] border-l border-luxury-border z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+        <div class="p-5 border-b border-luxury-border flex justify-between items-center bg-[#1a1a1a]">
+            <h3 class="text-lg font-bold text-luxury-gold flex items-center gap-2">
+                <i class="fa-solid fa-cart-shopping"></i> سلة طلبات التفصيل الفاخرة
+            </h3>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-4 divide-y divide-luxury-border/50">
+            <!-- Cart items dynamically added -->
+        </div>
+        <div class="p-5 border-t border-luxury-border bg-[#1a1a1a]">
+            <div class="flex justify-between items-center mb-4 text-base font-bold">
+                <span class="text-gray-300">المجموع التقديري:</span>
+                <span id="cartTotalPrice" class="text-luxury-gold">0 درهم</span>
+            </div>
+            <button onclick="checkoutWhatsApp()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-xl"></i> إرسال الطلب عبر واتساب
+            </button>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal for Interactive Zoom -->
+    <div id="lightboxModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4 backdrop-blur-md">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white text-3xl p-3 hover:text-luxury-gold transition"><i class="fa-solid fa-xmark"></i></button>
+        <img id="lightboxImg" src="" alt="Zoomed Image" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-luxury-border">
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // 18 Data Items corresponding precisely to the provided images and descriptions
+        const productsData = [
+            { id: 1, img: "1000078692.jpg", titleAr: "صالون عصري متكامل", descAr: "ثوب موبرة فاخر مقاوم للبقع، خشب أحمر صلب، إضاءة مخفية وأناقة مطلقة.", price: "ابتداءً من 8,500 د.م", fabric: "الموبرة الملكية", wood: "خشب الزان الأحمر" },
+            { id: 2, img: "1000078686.jpg", titleAr: "وحدة تلفاز خشبية وماربر", descAr: "تصميم هندسي متناسق مع رخام فاخر وخشب عالي الجودة.", price: "ابتداءً من 3,200 د.م", fabric: "بدون تنجيد", wood: "مضغوط فائق الجودة + رخام" },
+            { id: 3, img: "1000078688.jpg", titleAr: "تجهيز المطابخ العصرية", descAr: "تنظيم عالي الجودة، خزائن بتصميم عصري واستغلال ذكي للمساحات.", price: "حسب القياس", fabric: "بدون", wood: "خشب MDF مقاوم للرطوبة" },
+            { id: 4, img: "1000078693.jpg", titleAr: "طقم طاولة طعام ملكية مع كراسي", descAr: "طاولة دائرية خشبية مع 6 كراسي منقوشة بثوب البوكلي الراقي.", price: "ابتداءً من 6,800 د.م", fabric: "ثوب البوكلي الإيطالي", wood: "خشب الجوز الخالص" },
+            { id: 5, img: "1000078694.jpg", titleAr: "ستائر رول (Stores) مزدوجة", descAr: "ستائر عصرية لغرف المعيشة والمكاتب، تحكم سلس في الإضاءة.", price: "250 د.م للمتر مربع", fabric: "قماش بلاستيكي معالج", wood: "ألومنيوم مقوى" },
+            { id: 6, img: "1000078695.jpg", titleAr: "صالون مودرن مع وسائد ذهبية", descAr: "تصميم مريح بمساند ظهر مبطنة وألوان متناسقة مع الديكور.", price: "ابتداءً من 7,500 د.م", fabric: "موبرة ناعمة + قطيفة", wood: "خشب أبيض ممتاز" },
+            { id: 7, img: "1000078696.jpg", titleAr: "جلسة أرضية عصرية مع خلفية خشبية", descAr: "ديكور حائط خشبي مع صالون منخفض مريح للغاية.", price: "ابتداءً من 9,000 د.م", fabric: "ثوب البهجة العصري", wood: "ألواح خشبية ديكورية" },
+            { id: 8, img: "1000078697.jpg", titleAr: "صالون زاوية (L-Shape) فخم", descAr: "مثالي للمساحات الكبيرة، مع وسائد برتقالية دافئة.", price: "ابتداءً من 8,200 د.م", fabric: "موبرة مقاومة للماء", wood: "خشب صلب معزز" },
+            { id: 9, img: "1000078698.jpg", titleAr: "كراسي فوتوييه دائرية (Fauteuils)", descAr: "تصميم استثنائي يجمع بين الأخضر والأبيض لإضافة لمسة فنية.", price: "1,800 د.م للقطعة", fabric: "موبرة مخملية", wood: "قاعدة خشبية دائرية مخفية" },
+            { id: 10, img: "1000078699.jpg", titleAr: "أريكة بيج كلاسيكية مع فوتوييه", descAr: "راحة تامة وبساطة في التصميم تناسب الشقق العصرية.", price: "ابتداءً من 5,500 د.م", fabric: "ثوب الكتان المعالج", wood: "أرجل خشبية طبيعية" },
+            { id: 11, img: "1000078700.jpg", titleAr: "صالون بتصميم عضوي منحني", descAr: "خطوط انسيابية حديثة تمنح المكان طابعاً مستقبلياً فريداً.", price: "ابتداءً من 9,500 د.م", fabric: "ثوب البوكلي العالي الكثافة", wood: "هيكل خشبي مقوس خاص" },
+            { id: 12, img: "1000078701.jpg", titleAr: "صالون متكامل مع طاولة وسط زجاجية", descAr: "طقم متكامل يضم كراسي دائرية، أريكة رمادية، وطاولة عصرية.", price: "ابتداءً من 11,000 د.م", fabric: "موبرة خشنة فاخرة", wood: "خشب الزان + زجاج معالج" },
+            { id: 13, img: "1000078693.jpg", titleAr: "صالون ضيوف مغربي عصري", descAr: "مزيج بين الأصالة والاتقان الحديث في التفصيل.", price: "ابتداءً من 7,800 د.م", fabric: "موبرة مغربية ملكية", wood: "خشب الصنوبر الممتاز" },
+            { id: 14, img: "1000078694.jpg", titleAr: "ستائر صالون ديزاين فاخر", descAr: "ستائر مزدوجة بطبقات شفافة وثقيلة لضمان الخصوصية والجمالية.", price: "ابتداءً من 1,200 د.م للنافذة", fabric: "حرير وكتان فرنسي", wood: "قضبان خشبية منمقة" },
+            { id: 15, img: "1000078695.jpg", titleAr: "جلسة تلفاز عائلية مودرن", descAr: "مريحة للغاية مصممة خصيصاً لساعات الاسترخاء الطويلة.", price: "ابتداءً من 6,000 د.م", fabric: "ثوب قطني ناعم", wood: "خشب متين مقاوم للاستعمال" },
+            { id: 16, img: "1000078696.jpg", titleAr: "ديكور حوائط خشبية (Wood Panelling)", descAr: "تجليد الحوائط بأشرطة خشبية عمودية لإعطاء عمق وفخامة للمكان.", price: "350 د.م للمتر مربع", fabric: "بدون", wood: "خشب الجوز الإفريقي" },
+            { id: 17, img: "1000078697.jpg", titleAr: "فوتوييه استرخاء مفرد", descAr: "كرسي مفرد مريح بتصميم دائري يناسب زوايا القراءة.", price: "2,200 د.م", fabric: "موبرة فاخرة", wood: "قاعدة فولاذية خفية" },
+            { id: 18, img: "1000078700.jpg", titleAr: "صالون فاخر خاص بالفلل والشقق الكبرى", descAr: "تحفة فنية متكاملة تُفصل حسب مقاسات صالونك الخاص.", price: "حسب الطلب الخاص", fabric: "اختيار حسب الطلب", wood: "خشب الزان الخالص 100%" }
+        ];
+
+        let cart = [];
+
+        // Render Products Grid with 3D Tilt Effect
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = productsData.map((p, index) => `
+                <div class="glass-card rounded-2xl overflow-hidden border border-luxury-border flex flex-col card-tilt hover:border-luxury-gold/50 transition shadow-xl" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                    <div class="h-64 overflow-hidden relative group cursor-pointer" onclick="openLightbox('${p.img}')">
+                        <img src="${p.img}" alt="${p.titleAr}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-luxury-gold text-2xl">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </div>
+                        <span class="absolute top-3 right-3 bg-luxury-dark/80 backdrop-blur border border-luxury-gold/40 text-luxury-gold text-[11px] font-bold px-3 py-1 rounded-full">
+                            #${index + 1}
+                        </span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-lg text-white mb-2">${p.titleAr}</h4>
+                            <p class="text-xs text-gray-400 mb-4 leading-relaxed">${p.descAr}</p>
+                            <div class="space-y-1.5 text-xs border-t border-luxury-border/60 pt-3 mb-4">
+                                <div class="flex justify-between"><span class="text-gray-500">نوع الثوب:</span> <span class="text-luxury-gold font-semibold">${p.fabric}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">نوع الخشب:</span> <span class="text-gray-300 font-semibold">${p.wood}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">السعر التقديري:</span> <span class="text-green-400 font-bold">${p.price}</span></div>
+                            </div>
+                        </div>
+                        <button onclick="addToCart(${p.id})" class="w-full bg-gradient-to-r from-luxury-accent to-luxury-gold hover:opacity-90 text-black font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md">
+                            <i class="fa-solid fa-cart-plus"></i> أضف للسلة لطلب التفصيل
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 3D Tilt Effect Handler
+        function handleTilt(e, card) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xc = rect.width / 2;
+            const yc = rect.height / 2;
+            const dx = (x - xc) / 15;
+            const dy = (yc - y) / 15;
+            card.style.transform = `perspective(1000px) rotateY(${dx}deg) rotateX(${dy}deg) scale3d(1.02, 1.02, 1.02)`;
+        }
+
+        function resetTilt(card) {
+            card.style.transform = `perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)`;
+        }
+
+        // Cart Drawer Logic
+        function toggleCart() {
+            const drawer = document.getElementById('cartDrawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        function addToCart(id) {
+            const product = productsData.find(p => p.id === id);
+            cart.push(product);
+            updateCartUI();
+            toggleCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartCount').innerText = cart.length;
+            const container = document.getElementById('cartItemsContainer');
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 py-10 text-xs">سلة الطلبات فارغة حالياً</p>`;
+                document.getElementById('cartTotalPrice').innerText = "0 درهم";
+                return;
+            }
+            container.innerHTML = cart.map((item, index) => `
+                <div class="flex items-center gap-4 py-3">
+                    <img src="${item.img}" class="w-16 h-16 object-cover rounded-xl border border-luxury-border">
+                    <div class="flex-1">
+                        <h5 class="text-xs font-bold text-white">${item.titleAr}</h5>
+                        <p class="text-[10px] text-luxury-gold mt-1">${item.price}</p>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            `).join('');
+            document.getElementById('cartTotalPrice').innerText = `${cart.length} منتجات مختارة للطلب`;
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert("المرجو إضافة منتجات إلى السلة أولاً!");
+                return;
+            }
+            let msg = "السلام عليكم، أرغب في طلب تفصيل المنتجات التالية من Désign Saâda:\n\n";
+            cart.forEach((item, i) => {
+                msg += `${i+1}. ${item.titleAr} (${item.price}) - الثوب: ${item.fabric} - الخشب: ${item.wood}\n`;
+            });
+            msg += "\nالمرجو تأكيد الطلب وتحديد موعد أخذ القياسات والتوصيل.";
+            window.open(`https://wa.me/212656593754?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Lightbox Functions
+        function openLightbox(imgSrc) {
+            const modal = document.getElementById('lightboxModal');
+            const img = document.getElementById('lightboxImg');
+            img.src = imgSrc;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightboxModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        // 3D Particles Background with Three.js
+        function init3DParticles() {
+            const canvas = document.getElementById('canvas3d');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 700;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.03,
+                color: 0xd4af37,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, material);
+            scene.add(particlesMesh);
+
+            camera.position.z = 4;
+
+            let mouseX = 0;
+            let mouseY = 0;
+
+            window.addEventListener('mousemove', (event) => {
+                mouseX = event.clientX / window.innerWidth - 0.5;
+                mouseY = event.clientY / window.innerHeight - 0.5;
+            });
+
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+
+                particlesMesh.rotation.y = elapsedTime * 0.05 + mouseX * 0.5;
+                particlesMesh.rotation.x = elapsedTime * 0.03 + mouseY * 0.5;
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // 10 Languages Dictionary Support
+        const translations = {
+            ar: { nav_home: "الرئيسية", nav_gallery: "معرض التحف والخدمات", nav_about: "من نحن", nav_contact: "تواصل معنا", hero_badge: "أرقى تصاميم التنجيد والأثاث العصري بالمغرب", hero_title: "فخامة الصالونات العصرية", hero_desc: "اكتشف تشكيلة حصرية لـ 18 منتجاً ومنحوتة فنية في التنجيد، الصالونات، وحدات التلفاز، والمطابخ بتصاميم عالمية ومعايير جودة لا تُضاهى.", hero_btn_explore: "استكشف المعرض الفاخر", hero_btn_wa: "طلب استشارة خاصة", gallery_title: "معرض الأعمال والتحف الفخمة", gallery_subtitle: "انقر على أي صورة لتفعيل خاصية الزووم التفاعلي، أو اضغط على أضف للسلة لطلب التفصيل حسب القياسات.", about_tag: "من نحن", about_title: "Désign Saâda - خبرة طويلة في عالم التنجيد العصري والديكور", about_desc1: "مقرنا الرئيسي في مدينة المحمدية، ونقدم خدماتنا الراقية وتوصيلنا المضمون لجميع مدن المغرب. نحن متخصصون في تفصيل الصالونات العصرية، الكراسي الفاخرة (Fauteuils)، تجهيز وحدات التلفاز، المطابخ، والستائر الذكية بأجود أنواع الأثواب الخالدة (الموبرة، البهجة، البوكلي) وأفخر أنواع الخشب الصلب.", about_desc2: "نضمن لك دقة في التفصيل، التزام بالمواعيد، ولمسة جمالية تجعل منزلك تحفة فنية تنطق بالفخامة.", stat_designs: "تصميم حصري", stat_quality: "جودة مضمونة", stat_delivery: "توصيل آمن", footer_desc: "المرجع الأول للأثاث العصري والتنجيد الفاخر بالمحمدية، مع خدمة التوصيل لجميع مدن المملكة المغربية.", footer_links: "روابط سريعة", footer_social: "تابعنا على السوشيال ميديا" },
+            fr: { nav_home: "Accueil", nav_gallery: "Galerie", nav_about: "À propos", nav_contact: "Contact", hero_badge: "Design de Tapisserie Moderne au Maroc", hero_title: "L'Excellence du Salon Moderne", hero_desc: "Découvrez notre collection exclusive de 18 pièces de design d'intérieur, salons et ameublement sur mesure.", hero_btn_explore: "Explorer la Galerie", hero_btn_wa: "Consultation WhatsApp", gallery_title: "Galerie des Œuvres", gallery_subtitle: "Cliquez sur une image pour zoomer ou l'ajouter au panier de commande.", about_tag: "À propos", about_title: "Désign Saâda - Tapissier Moderne à Mohammedia", about_desc1: "Basés à Mohammedia avec livraison dans tout le Maroc, nous sommes spécialisés dans la confection de salons sur mesure, fauteuils et décoration de luxe.", about_desc2: "Nous garantissons une précision absolue et une qualité haut de gamme.", stat_designs: "Designs Exclusifs", stat_quality: "Qualité Garantie", stat_delivery: "Livraison Nationale", footer_desc: "La référence du mobilier moderne et de la tapisserie de luxe à Mohammedia.", footer_links: "Liens Rapides", footer_social: "Réseaux Sociaux" },
+            en: { nav_home: "Home", nav_gallery: "Gallery", nav_about: "About Us", nav_contact: "Contact", hero_badge: "Modern Upholstery & Furniture in Morocco", hero_title: "Luxury Modern Living Rooms", hero_desc: "Discover an exclusive collection of 18 high-end interior design and custom upholstery pieces.", hero_btn_explore: "Explore Gallery", hero_btn_wa: "WhatsApp Consultation", gallery_title: "Exclusive Gallery", gallery_subtitle: "Click any image to zoom or add to your custom order cart.", about_tag: "About Us", about_title: "Désign Saâda - Modern Upholstery Experts", about_desc1: "Based in Mohammedia with nationwide delivery across Morocco. We specialize in custom modern living rooms, luxury fauteuils, and interior decor.", about_desc2: "Absolute precision and premium quality guaranteed.", stat_designs: "Exclusive Designs", stat_quality: "Quality Guaranteed", stat_delivery: "Nationwide Delivery", footer_desc: "The primary destination for modern furniture and luxury upholstery in Mohammedia.", footer_links: "Quick Links", footer_social: "Social Media" },
+            es: { nav_home: "Inicio", nav_gallery: "Galería", nav_about: "Sobre Nosotros", nav_contact: "Contacto", hero_badge: "Tapicería y Muebles Modernos en Marruecos", hero_title: "Lujo y Confort en Salones Modernos", hero_desc: "Descubre nuestra colección exclusiva de 18 piezas de diseño y tapicería a medida.", hero_btn_explore: "Explorar Galería", hero_btn_wa: "Consulta WhatsApp", gallery_title: "Galería Exclusiva", gallery_subtitle: "Haz clic en cualquier imagen para hacer zoom o añadir al carrito.", about_tag: "Sobre Nosotros", about_title: "Désign Saâda - Expertos en Tapicería", about_desc1: "Con sede en Mohammedia y envíos a todo Marruecos. Especialistas en salones modernos y decoración.", about_desc2: "Garantizamos precisión y máxima calidad.", stat_designs: "Diseños Exclusivos", stat_quality: "Calidad Garantizada", stat_delivery: "Envío Nacional", footer_desc: "El referente de muebles modernos y tapicería de lujo en Mohammedia.", footer_links: "Enlaces Rápidos", footer_social: "Redes Sociales" },
+            de: { nav_home: "Startseite", nav_gallery: "Galerie", nav_about: "Über Uns", nav_contact: "Kontakt", hero_badge: "Moderne Polstermöbel in Marokko", hero_title: "Luxus Moderne Wohnzimmer", hero_desc: "Entdecken Sie unsere exklusive Kollektion von 18 maßgefertigten Design- und Polstermöbeln.", hero_btn_explore: "Galerie Erkunden", hero_btn_wa: "WhatsApp Beratung", gallery_title: "Exklusive Galerie", gallery_subtitle: "Klicken Sie auf ein Bild für den Zoom oder zum Hinzufügen zum Warenkorb.", about_tag: "Über Uns", about_title: "Désign Saâda - Moderne Polsterei", about_desc1: "Mit Sitz in Mohammedia und Lieferung in ganz Marokko. Spezialisiert auf maßgeschneiderte Wohnzimmer.", about_desc2: "Höchste Präzision und erstklassige Qualität garantiert.", stat_designs: "Exklusive Designs", stat_quality: "Geprüfte Qualität", stat_delivery: "Landesweite Lieferung", footer_desc: "Die erste Adresse für moderne Möbel und Luxuspolsterung in Mohammedia.", footer_links: "Schnelllinks", footer_social: "Soziale Medien" },
+            it: { nav_home: "Home", nav_gallery: "Galleria", nav_about: "Chi Siamo", nav_contact: "Contatti", hero_badge: "Tappezzeria e Arredi Moderni in Marocco", hero_title: "Lusso e Design per il Tuo Salotto", hero_desc: "Scopri la nostra collezione esclusiva di 18 pezzi di design d'interni su misura.", hero_btn_explore: "Esplora Galleria", hero_btn_wa: "Consulenza WhatsApp", gallery_title: "Galleria Esclusiva", gallery_subtitle: "Clicca su qualsiasi immagine per ingrandire o aggiungere al carrello.", about_tag: "Chi Siamo", about_title: "Désign Saâda - Esperti di Tappezzeria", about_desc1: "Con sede a Mohammedia e spedizioni in tutto il Marocco. Specializzati in saloni moderni e arredi di lusso.", about_desc2: "Precisione assoluta e massima qualità garantita.", stat_designs: "Design Esclusivi", stat_quality: "Qualità Garantita", stat_delivery: "Spedizione Nazionale", footer_desc: "Il punto di riferimento per mobili moderni e tappezzeria di lusso a Mohammedia.", footer_links: "Link Rapidi", footer_social: "Social Media" },
+            nl: { nav_home: "Home", nav_gallery: "Galerij", nav_about: "Over Ons", nav_contact: "Contact", hero_badge: "Moderne Stoffering & Meubels in Marokko", hero_title: "Luxe Moderne Woonkamers", hero_desc: "Ontdek onze exclusieve collectie van 18 op maat gemaakte interieurontwerpen.", hero_btn_explore: "Verken Galerij", hero_btn_wa: "WhatsApp Overleg", gallery_title: "Exclusieve Galerij", gallery_subtitle: "Klik op een afbeelding om te zoomen of toe te voegen aan de bestelwagen.", about_tag: "Over Ons", about_title: "Désign Saâda - Moderne Stoffering", about_desc1: "Gevestigd in Mohammedia met landelijke levering in Marokko. Gespecialiseerd in maatwerk woonkamers.", about_desc2: "Absolute precisie en premium kwaliteit gegarandeerd.", stat_designs: "Exclusieve Ontwerpen", stat_quality: "Kwaliteit Gegarandeerd", stat_delivery: "Landelijke Levering", footer_desc: "De referentie voor modern meubilair en luxueuze stoffering in Mohammedia.", footer_links: "Snelle Links", footer_social: "Sociale Media" },
+            "ar-sa": { nav_home: "الرئيسية", nav_gallery: "معرض الأعمال", nav_about: "من نحن", nav_contact: "اتصل بنا", hero_badge: "أرقى تصاميم الأثاث العصري بالمملكة المغربية", hero_title: "فخامة الصالونات العصرية", hero_desc: "اكتشف تشكيلة حصرية من أروع تصاميم التنجيد والأثاث المنزلي الفاخر.", hero_btn_explore: "استكشف المعرض", hero_btn_wa: "استشارة فورية", gallery_title: "معرض التحف الفخمة", gallery_subtitle: "اضغط على أي صورة لتكبيرها أو إضافتها لطلب التفصيل.", about_tag: "من نحن", about_title: "ديزاين سعادة - خبرة راقية في التنجيد العصري", about_desc1: "مقرنا بالمحمدية مع خدمة التوصيل لكافة مدن المملكة. متخصصون في تفصيل الصالونات والديكورات العصرية.", about_desc2: "نضمن الجودة الفائقة والاتقان التام.", stat_designs: "تصاميم حصرية", stat_quality: "جودة عالية", stat_delivery: "توصيل شامل", footer_desc: "الوجهة الأولى للأثاث الفاخر والتنجيد العصري بالمحمدية.", footer_links: "روابط سريعة", footer_social: "منصات التواصل" },
+            tr: { nav_home: "Ana Sayfa", nav_gallery: "Galeri", nav_about: "Hakkımızda", nav_contact: "İletişim", hero_badge: "Fas'ta Modern Döşeme ve Mobilya", hero_title: "Lüks Modern Oturma Odaları", hero_desc: "18 özel tasarım ve özel yapım mobilya koleksiyonumuzu keşfedin.", hero_btn_explore: "Galeriyi Keşfet", hero_btn_wa: "WhatsApp Danışma", gallery_title: "Özel Galeri", gallery_subtitle: "Yakınlaştırmak veya sepete eklemek için herhangi bir resme tıklayın.", about_tag: "Hakkımızda", about_title: "Désign Saâda - Modern Döşeme Uzmanları", about_desc1: "Muhammediye merkezli olup Fas genelinde teslimat yapmaktayız. Özel salonlar konusunda uzmanız.", about_desc2: "Mutlak hassasiyet ve birinci sınıf kalite garantilidir.", stat_designs: "Özel Tasarımlar", stat_quality: "Kalite Garantili", stat_delivery: "Ülke Çapında Teslimat", footer_desc: "Muhammediye'de modern mobilya ve lüks döşemenin adresi.", footer_links: "Hızlı Bağlantılar", footer_social: "Sosyal Medya" },
+            zh: { nav_home: "首页", nav_gallery: "作品展厅", nav_about: "关于我们", nav_contact: "联系我们", hero_badge: "摩洛哥现代软装与高档家具", hero_title: "奢华现代客厅设计", hero_desc: "探索18款独家高端室内设计与定制软装系列。", hero_btn_explore: "浏览展厅", hero_btn_wa: "WhatsApp咨询", gallery_title: "精品展厅", gallery_subtitle: "点击任意图片可进行交互式缩放或加入定制订单车。", about_tag: "关于我们", about_title: "Désign Saâda - 现代软装专家", about_desc1: "总部位于穆罕默迪耶，服务覆盖摩洛哥全境。专业定制现代客厅及豪华家具。", about_desc2: "绝对的工艺精度与卓越品质保证。", stat_designs: "独家设计", stat_quality: "品质保证", stat_delivery: "全境配送", footer_desc: "穆罕默迪耶现代家具与奢华软装的首选品牌。", footer_links: "快速链接", footer_social: "社交媒体" }
+        };
+
+        function changeLanguage(lang) {
+            const t = translations[lang] || translations['ar'];
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar' || lang === 'ar-sa') ? 'rtl' : 'ltr';
+            
+            for (const key in t) {
+                const el = document.querySelector(`[data-i18n="${key}"]`);
+                if (el) el.innerText = t[key];
+            }
+        }
+
+        // Initialize App on Window Load
+        window.onload = () => {
+            renderProducts();
+            init3DParticles();
+        };
+    </script>
+</body>
+</html>

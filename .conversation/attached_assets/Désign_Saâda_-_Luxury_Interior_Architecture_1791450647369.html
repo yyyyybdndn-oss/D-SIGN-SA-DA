@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Désign Saâda | Chez Tapissier Moderne - Mohammedia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo & Cinzel for luxury serif -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0b0f',
+                        darkCard: '#13131a',
+                        darkBorder: '#232333',
+                        goldPrimary: '#d4af37',
+                        goldSecondary: '#8b5a2b',
+                        goldLight: '#f3e5ab'
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        cinzel: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0b0b0f;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .font-luxury {
+            font-family: 'Cinzel', serif;
+        }
+        /* Custom Glassmorphism */
+        .glass-card {
+            background: rgba(19, 19, 26, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .glass-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.2);
+        }
+        /* Gold Gradient Text */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #8b5a2b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #d4af37 0%, #8b5a2b 100%);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0b0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+        #three-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-100 antialiased selection:bg-goldPrimary selection:text-black">
+
+    <!-- HEADER & NAVIGATION -->
+    <header class="fixed top-0 left-0 w-full z-50 glass-card transition-all duration-300 border-b border-darkBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full border border-goldPrimary flex items-center justify-center bg-darkBg group-hover:scale-105 transition-transform">
+                    <i class="fas fa-crown text-goldPrimary text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-luxury font-bold tracking-wider gold-gradient-text">DÉSIGN SAÂDA</span>
+                    <span class="block text-[10px] text-gray-400 tracking-widest uppercase" data-i18n="subtitle">Chez Tapissier Moderne</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide">
+                <a href="#hero" class="text-goldPrimary hover:text-goldLight transition-colors" data-i18n="nav_home">Accueil</a>
+                <a href="#collections" class="text-gray-300 hover:text-goldPrimary transition-colors" data-i18n="nav_collections">Collections 100M</a>
+                <a href="#customizer" class="text-gray-300 hover:text-goldPrimary transition-colors" data-i18n="nav_custom">Sur Mesure</a>
+                <a href="#about" class="text-gray-300 hover:text-goldPrimary transition-colors" data-i18n="nav_about">L'Atelier</a>
+                <a href="#contact" class="text-gray-300 hover:text-goldPrimary transition-colors" data-i18n="nav_contact">Contact & VIP</a>
+            </nav>
+
+            <!-- Actions (Language Switcher, Cart, WhatsApp) -->
+            <div class="flex items-center gap-4">
+                <!-- Multi-Language Dropdown (10+ Languages) -->
+                <div class="relative">
+                    <button id="langMenuBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-darkBorder bg-darkCard text-xs font-semibold hover:border-goldPrimary transition-colors">
+                        <i class="fas fa-globe text-goldPrimary"></i>
+                        <span id="currentLangLabel">FR</span>
+                        <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
+                    </button>
+                    <div id="langDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-xl glass-card border border-darkBorder shadow-2xl py-2 z-50 max-h-72 overflow-y-auto">
+                        <button onclick="changeLanguage('fr')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>Français</span> <span class="text-gray-500">FR</span></button>
+                        <button onclick="changeLanguage('ar')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>العربية</span> <span class="text-gray-500">AR</span></button>
+                        <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>English</span> <span class="text-gray-500">EN</span></button>
+                        <button onclick="changeLanguage('es')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>Español</span> <span class="text-gray-500">ES</span></button>
+                        <button onclick="changeLanguage('it')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>Italiano</span> <span class="text-gray-500">IT</span></button>
+                        <button onclick="changeLanguage('de')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>Deutsch</span> <span class="text-gray-500">DE</span></button>
+                        <button onclick="changeLanguage('nl')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>Nederlands</span> <span class="text-gray-500">NL</span></button>
+                        <button onclick="changeLanguage('tr')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>Türkçe</span> <span class="text-gray-500">TR</span></button>
+                        <button onclick="changeLanguage('zh')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>中文</span> <span class="text-gray-500">ZH</span></button>
+                        <button onclick="changeLanguage('zgh')" class="w-full text-left px-4 py-2 text-xs hover:bg-goldPrimary/10 hover:text-goldPrimary flex items-center justify-between"><span>Tamanghshit</span> <span class="text-gray-500">ZGH</span></button>
+                    </div>
+                </div>
+
+                <!-- Cart Toggle Button -->
+                <button onclick="toggleCart()" class="relative p-2.5 rounded-xl border border-darkBorder bg-darkCard text-goldPrimary hover:border-goldPrimary transition-colors">
+                    <i class="fas fa-shopping-bag text-base"></i>
+                    <span id="cartBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-goldPrimary text-black font-bold text-[10px] rounded-full flex items-center justify-center shadow-md">0</span>
+                </button>
+
+                <!-- Mobile Menu Trigger -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl border border-darkBorder bg-darkCard text-gray-300">
+                    <i class="fas fa-bars text-base"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden glass-card border-t border-darkBorder px-6 py-4 space-y-3">
+            <a href="#hero" class="block text-sm font-semibold text-goldPrimary" data-i18n="nav_home">Accueil</a>
+            <a href="#collections" class="block text-sm font-semibold text-gray-300" data-i18n="nav_collections">Collections 100M</a>
+            <a href="#customizer" class="block text-sm font-semibold text-gray-300" data-i18n="nav_custom">Sur Mesure</a>
+            <a href="#about" class="block text-sm font-semibold text-gray-300" data-i18n="nav_about">L'Atelier</a>
+            <a href="#contact" class="block text-sm font-semibold text-gray-300" data-i18n="nav_contact">Contact & VIP</a>
+        </div>
+    </header>
+
+    <!-- HERO SECTION WITH THREE.JS PARTICLE BACKGROUND -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div id="three-container"></div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 text-center py-20">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-goldPrimary/40 bg-goldPrimary/10 mb-6 backdrop-blur-md animate-pulse">
+                <i class="fas fa-gem text-goldPrimary text-xs"></i>
+                <span class="text-xs font-bold tracking-widest uppercase text-goldLight" data-i18n="hero_badge">Haute Tapisserie & Design Royal • Mohammedia</span>
+            </div>
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-luxury font-black tracking-wider leading-tight mb-6">
+                <span class="gold-gradient-text" data-i18n="hero_title">L'Élégance Absolue à l'Impériale</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-base sm:text-lg text-gray-300 font-light mb-10 leading-relaxed" data-i18n="hero_desc">
+                Une collection d'exception de 100 millions de dirhams redéfinissant le luxe marocain et contemporain. Confection sur mesure par <span class="text-goldPrimary font-semibold">Chez Tapissier Moderne</span> avec livraison VIP dans tout le Maroc.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#collections" class="w-full sm:w-auto px-8 py-4 rounded-xl gold-gradient-bg text-black font-bold tracking-wide shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-3">
+                    <span data-i18n="btn_explore">Découvrir la Collection</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="https://wa.me/212656593754?text=Bonjour%20D%C3%A9sign%20Sa%C3%A2da,%20je%20souhaite%20prendre%20rendez-vous%20VIP" target="_blank" class="w-full sm:w-auto px-8 py-4 rounded-xl border border-goldPrimary/50 bg-darkCard/80 text-goldPrimary font-bold tracking-wide hover:bg-goldPrimary/10 transition-all flex items-center justify-center gap-3">
+                    <i class="fab fa-whatsapp text-lg"></i>
+                    <span data-i18n="btn_whatsapp">Consultation VIP (06 56 59 37 54)</span>
+                </a>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 pt-10 border-t border-darkBorder/60">
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <span class="block text-2xl sm:text-3xl font-luxury font-bold text-goldPrimary">100M MAD</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider mt-1 block" data-i18n="stat_valuation">Valeur d'Exception</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <span class="block text-2xl sm:text-3xl font-luxury font-bold text-goldPrimary">100%</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider mt-1 block" data-i18n="stat_custom">Sur Mesure & Ebénisterie</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <span class="block text-2xl sm:text-3xl font-luxury font-bold text-goldPrimary">Mohammedia</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider mt-1 block" data-i18n="stat_location">Atelier Principal</span>
+                </div>
+                <div class="glass-card p-6 rounded-2xl text-center">
+                    <span class="block text-2xl sm:text-3xl font-luxury font-bold text-goldPrimary">Maroc VIP</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider mt-1 block" data-i18n="stat_delivery">Livraison & Installation</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COLLECTIONS & PRODUCTS SECTION -->
+    <section id="collections" class="py-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-xs font-bold uppercase tracking-widest text-goldPrimary block mb-3" data-i18n="sec_subtitle">Chefs-d'œuvre Exclusifs</span>
+            <h2 class="text-3xl sm:text-5xl font-luxury font-bold mb-4">
+                <span class="gold-gradient-text" data-i18n="sec_title">La Collection Souveraine</span>
+            </h2>
+            <p class="text-gray-400 text-sm sm:text-base font-light" data-i18n="sec_desc">
+                Chaque pièce est façonnée à la main avec les bois les plus nobles et des étoffes d'une somptuosité rare. Survolez pour activer l'effet 3D tilt.
+            </p>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
+                <button onclick="filterProducts('all')" class="filter-btn active px-5 py-2 rounded-xl text-xs font-bold border border-goldPrimary bg-goldPrimary text-black transition-all" data-i18n="filter_all">Tous les Produits</button>
+                <button onclick="filterProducts('salon')" class="filter-btn px-5 py-2 rounded-xl text-xs font-bold border border-darkBorder bg-darkCard text-gray-300 hover:border-goldPrimary transition-all" data-i18n="filter_salons">Salons Royaux</button>
+                <button onclick="filterProducts('tv')" class="filter-btn px-5 py-2 rounded-xl text-xs font-bold border border-darkBorder bg-darkCard text-gray-300 hover:border-goldPrimary transition-all" data-i18n="filter_tv">Meubles TV & Bois</button>
+                <button onclick="filterProducts('blind')" class="filter-btn px-5 py-2 rounded-xl text-xs font-bold border border-darkBorder bg-darkCard text-gray-300 hover:border-goldPrimary transition-all" data-i18n="filter_blinds">Stores & Rideaux</button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamic JavaScript Product Cards Insertion -->
+        </div>
+    </section>
+
+    <!-- BESPOKE CUSTOMIZER SECTION -->
+    <section id="customizer" class="py-24 border-t border-darkBorder relative z-10 bg-darkCard/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-goldPrimary block mb-3" data-i18n="custom_subtitle">Sur Mesure d'Exception</span>
+                    <h2 class="text-3xl sm:text-4xl font-luxury font-bold mb-6">
+                        <span class="gold-gradient-text" data-i18n="custom_title">Concevez Votre Pièce Unique</span>
+                    </h2>
+                    <p class="text-gray-300 text-sm sm:text-base font-light mb-8 leading-relaxed" data-i18n="custom_desc">
+                        Chez Tapissier Moderne matérialise vos rêves les plus audacieux. Choisissez vos essences de bois précieux, vos étoffes de haute couture et dimensions sur mesure.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 border border-goldPrimary/30 flex items-center justify-center shrink-0">
+                                <i class="fas fa-tree text-goldPrimary"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="feature_wood_title">Essences de Bois Nobles</h4>
+                                <p class="text-xs text-gray-400" data-i18n="feature_wood_desc">Noyer massif, acajou, chêne de premier choix et bois rouge.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-goldPrimary/10 border border-goldPrimary/30 flex items-center justify-center shrink-0">
+                                <i class="fas fa-feather text-goldPrimary"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="feature_fabric_title">Étoffes de Haute Couture</h4>
+                                <p class="text-xs text-gray-400" data-i18n="feature_fabric_desc">Velours italien, Mobra anti-taches, Bouclé luxueux et lin brodé.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customizer Interactive Card -->
+                <div class="glass-card p-8 rounded-3xl border border-goldPrimary/30 shadow-2xl">
+                    <h3 class="text-xl font-luxury font-bold text-goldPrimary mb-6" data-i18n="estimator_title">Devis & Estimation Instantanée</h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2" data-i18n="label_category">Type de Meuble</label>
+                            <select id="custType" class="w-full bg-darkBg border border-darkBorder rounded-xl p-3 text-sm text-white focus:border-goldPrimary outline-none">
+                                <option value="salon">Salon Marocain / Moderne complet</option>
+                                <option value="tv">Meuble TV & Agencement Mural</option>
+                                <option value="armchair">Fauteuil & Bergère Royale</option>
+                                <option value="blind">Stores & Rideaux Motorisés</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2" data-i18n="label_wood">Essence de Bois</label>
+                            <select id="custWood" class="w-full bg-darkBg border border-darkBorder rounded-xl p-3 text-sm text-white focus:border-goldPrimary outline-none">
+                                <option value="walnut">Noyer Massif (Haut de gamme)</option>
+                                <option value="redwood">Bois Rouge Traité</option>
+                                <option value="oak">Chêne Européen</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2" data-i18n="label_fabric">Qualité d'Étoffe</label>
+                            <select id="custFabric" class="w-full bg-darkBg border border-darkBorder rounded-xl p-3 text-sm text-white focus:border-goldPrimary outline-none">
+                                <option value="velvet">Velours Royal Anti-taches</option>
+                                <option value="mobra">Mobra Prestige</option>
+                                <option value="boucle">Bouclé Tressé Parisien</option>
+                            </select>
+                        </div>
+                        <div class="pt-4 border-t border-darkBorder flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-gray-400 block" data-i18n="est_label">Estimation Estimée :</span>
+                                <span id="estPrice" class="text-2xl font-luxury font-bold text-goldPrimary">35,000 MAD</span>
+                            </div>
+                            <button onclick="requestBespokeOrder()" class="px-6 py-3 rounded-xl gold-gradient-bg text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all">
+                                <span data-i18n="btn_command_custom">Commander sur WhatsApp</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT WORKSHOP SECTION -->
+    <section id="about" class="py-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glass-card p-8 sm:p-12 rounded-3xl border border-darkBorder relative overflow-hidden">
+            <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-goldPrimary/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-goldPrimary block mb-3" data-i18n="about_subtitle">L'Excellence Artisanale</span>
+                    <h2 class="text-3xl sm:text-4xl font-luxury font-bold mb-6">
+                        <span class="gold-gradient-text" data-i18n="about_title">Chez Tapissier Moderne à Mohammedia</span>
+                    </h2>
+                    <p class="text-gray-300 text-sm sm:text-base font-light mb-6 leading-relaxed" data-i18n="about_desc1">
+                        Fondée sur les valeurs de l'artisanat d'art et du design contemporain, notre maison incarne le summum du raffinement au Maroc. Situés à Mohammedia, nous supervisons chaque détail de la conception à la pose finale.
+                    </p>
+                    <p class="text-gray-300 text-sm sm:text-base font-light mb-8 leading-relaxed" data-i18n="about_desc2">
+                        Qu'il s'agisse de projets résidentiels de prestige ou de villas d'exception, nous assurons une livraison et une installation experte dans toutes les villes du Royaume.
+                    </p>
+                    <div class="flex items-center gap-6">
+                        <div>
+                            <span class="block text-xl font-luxury font-bold text-goldPrimary">06 56 59 37 54</span>
+                            <span class="text-xs text-gray-400" data-i18n="contact_direct">Ligne Directe Atelier</span>
+                        </div>
+                        <div class="h-10 w-px bg-darkBorder"></div>
+                        <div>
+                            <span class="block text-xl font-luxury font-bold text-goldPrimary">Mohammedia</span>
+                            <span class="text-xs text-gray-400" data-i18n="workshop_loc">Siège & Showroom</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="rounded-2xl overflow-hidden border border-goldPrimary/30 shadow-2xl aspect-video bg-darkBg flex items-center justify-center relative">
+                        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1000&q=80" alt="Atelier Tapisserie" class="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-700" onerror="this.src='https://placehold.co/800x600/13131a/d4af37?text=Design+Saada';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-darkBg via-transparent to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-goldPrimary uppercase tracking-widest" data-i18n="craft_badge">Savoir-Faire Souverain</span>
+                                <h4 class="text-lg font-luxury font-bold text-white">Désign Saâda</h4>
+                            </div>
+                            <a href="https://wa.me/212656593754" target="_blank" class="w-12 h-12 rounded-full gold-gradient-bg text-black flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                <i class="fab fa-whatsapp text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER & CONTACT -->
+    <footer id="contact" class="border-t border-darkBorder bg-darkCard/60 pt-16 pb-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full border border-goldPrimary flex items-center justify-center bg-darkBg">
+                            <i class="fas fa-crown text-goldPrimary text-sm"></i>
+                        </div>
+                        <span class="text-lg font-luxury font-bold tracking-wider gold-gradient-text">DÉSIGN SAÂDA</span>
+                    </div>
+                    <p class="text-xs text-gray-400 font-light leading-relaxed mb-4" data-i18n="footer_desc">
+                        Chez Tapissier Moderne • L'art de sublimer vos espaces intérieurs avec des collections exclusives d'une valeur de 100 millions de dirhams.
+                    </p>
+                    <div class="flex items-center gap-3 text-goldPrimary">
+                        <a href="https://wa.me/212656593754" target="_blank" class="w-9 h-9 rounded-xl border border-darkBorder bg-darkBg flex items-center justify-center hover:border-goldPrimary transition-colors"><i class="fab fa-whatsapp"></i></a>
+                        <a href="tel:+212656593754" class="w-9 h-9 rounded-xl border border-darkBorder bg-darkBg flex items-center justify-center hover:border-goldPrimary transition-colors"><i class="fas fa-phone"></i></a>
+                        <a href="mailto:contact@designsaada.ma" class="w-9 h-9 rounded-xl border border-darkBorder bg-darkBg flex items-center justify-center hover:border-goldPrimary transition-colors"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-white mb-4" data-i18n="footer_links">Navigation</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><a href="#hero" class="hover:text-goldPrimary transition-colors" data-i18n="nav_home">Accueil</a></li>
+                        <li><a href="#collections" class="hover:text-goldPrimary transition-colors" data-i18n="nav_collections">Collections</a></li>
+                        <li><a href="#customizer" class="hover:text-goldPrimary transition-colors" data-i18n="nav_custom">Sur Mesure</a></li>
+                        <li><a href="#about" class="hover:text-goldPrimary transition-colors" data-i18n="nav_about">L'Atelier</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-white mb-4" data-i18n="footer_services">Services Royaux</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><span class="hover:text-goldPrimary transition-colors">Salons sur mesure</span></li>
+                        <li><span class="hover:text-goldPrimary transition-colors">Ebénisterie & Meubles TV</span></li>
+                        <li><span class="hover:text-goldPrimary transition-colors">Stores & Rideaux motorisés</span></li>
+                        <li><span class="hover:text-goldPrimary transition-colors">Livraison VIP Maroc</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-white mb-4" data-i18n="footer_contact">Contact Atelier</h4>
+                    <p class="text-xs text-gray-400 mb-2"><i class="fas fa-map-marker-alt text-goldPrimary mr-2"></i> Mohammedia, Maroc</p>
+                    <p class="text-xs text-gray-400 mb-2"><i class="fas fa-phone text-goldPrimary mr-2"></i> 06 56 59 37 54</p>
+                    <p class="text-xs text-gray-400 mb-4"><i class="fas fa-truck text-goldPrimary mr-2"></i> <span data-i18n="delivery_all_morocco">Livraison dans tout le Maroc</span></p>
+                    <a href="https://wa.me/212656593754?text=Bonjour%20D%C3%A9sign%20Sa%C3%A2da" target="_blank" class="block w-full py-2.5 rounded-xl gold-gradient-bg text-black font-bold text-center text-xs uppercase tracking-wider">
+                        <i class="fab fa-whatsapp mr-2"></i> WhatsApp Direct
+                    </a>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-darkBorder flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500">
+                <p>&copy; 2026 Désign Saâda (Chez Tapissier Moderne). <span data-i18n="rights">Tous droits réservés.</span></p>
+                <p class="mt-2 sm:mt-0 font-luxury tracking-widest text-goldPrimary">100-MILLION-DIRHAM LUXURY COLLECTION</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART DRAWER SLIDE-OUT SIDEBAR -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity" onclick="toggleCart()"></div>
+    <div id="cartDrawer" class="fixed top-0 right-0 h-full w-full sm:w-[450px] glass-card border-l border-darkBorder z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b border-darkBorder flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-shopping-bag text-goldPrimary text-xl"></i>
+                <h3 class="font-luxury font-bold text-lg text-white" data-i18n="cart_title">Votre Panier VIP</h3>
+            </div>
+            <button onclick="toggleCart()" class="p-2 text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Dynamic Cart Items -->
+            <div class="text-center text-gray-500 py-20" id="emptyCartMsg" data-i18n="cart_empty">Votre panier est actuellement vide.</div>
+        </div>
+        <div class="p-6 border-t border-darkBorder bg-darkBg/80">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-sm text-gray-400" data-i18n="cart_total">Total Estimé :</span>
+                <span id="cartTotalPrice" class="text-xl font-luxury font-bold text-goldPrimary">0 MAD</span>
+            </div>
+            <button onclick="checkoutWhatsApp()" class="w-full py-4 rounded-xl gold-gradient-bg text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg hover:opacity-95 transition-all">
+                <i class="fab fa-whatsapp text-lg"></i>
+                <span data-i18n="cart_checkout">Commander via WhatsApp (06 56 59 37 54)</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- HIGH-RESOLUTION LIGHTBOX MODAL -->
+    <div id="lightboxModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 w-12 h-12 rounded-full glass-card border border-goldPrimary/50 text-goldPrimary flex items-center justify-center text-xl hover:scale-110 transition-transform z-10"><i class="fas fa-times"></i></button>
+        <div class="max-w-4xl w-full glass-card rounded-3xl border border-goldPrimary/30 overflow-hidden flex flex-col md:flex-row">
+            <div class="md:w-3/5 bg-black flex items-center justify-center p-4">
+                <img id="lightboxImg" src="" alt="Zoom" class="max-h-[70vh] w-full object-contain rounded-xl">
+            </div>
+            <div class="md:w-2/5 p-8 flex flex-col justify-between">
+                <div>
+                    <span class="text-xs font-bold text-goldPrimary uppercase tracking-widest" id="lightboxCategory">Salon Royal</span>
+                    <h3 id="lightboxTitle" class="text-2xl font-luxury font-bold text-white mt-1 mb-4">Nom du Meuble</h3>
+                    <p id="lightboxDesc" class="text-xs text-gray-300 font-light leading-relaxed mb-6">Description détaillée...</p>
+                    <div class="space-y-2 mb-6 text-xs border-t border-b border-darkBorder py-4">
+                        <div class="flex justify-between"><span class="text-gray-400" data-i18n="lb_fabric">Tissu :</span> <span id="lightboxFabric" class="text-white font-semibold">Velours</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400" data-i18n="lb_wood">Bois :</span> <span id="lightboxWood" class="text-white font-semibold">Noyer</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400" data-i18n="lb_delivery">Livraison :</span> <span class="text-goldPrimary font-semibold" data-i18n="lb_all_morocco">Tout le Maroc</span></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-gray-400">Prix :</span>
+                        <span id="lightboxPrice" class="text-2xl font-luxury font-bold text-goldPrimary">0 MAD</span>
+                    </div>
+                    <button onclick="addLightboxToCart()" class="w-full py-3.5 rounded-xl gold-gradient-bg text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span data-i18n="btn_add_cart">Ajouter au Panier / Demander</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Multi-Language Dictionary (10+ Languages)
+        const translations = {
+            fr: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Accueil",
+                nav_collections: "Collections 100M",
+                nav_custom: "Sur Mesure",
+                nav_about: "L'Atelier",
+                nav_contact: "Contact & VIP",
+                hero_badge: "Haute Tapisserie & Design Royal • Mohammedia",
+                hero_title: "L'Élégance Absolue à l'Impériale",
+                hero_desc: "Une collection d'exception de 100 millions de dirhams redéfinissant le luxe marocain et contemporain. Confection sur mesure par Chez Tapissier Moderne avec livraison VIP dans tout le Maroc.",
+                btn_explore: "Découvrir la Collection",
+                btn_whatsapp: "Consultation VIP (06 56 59 37 54)",
+                stat_valuation: "Valeur d'Exception",
+                stat_custom: "Sur Mesure & Ebénisterie",
+                stat_location: "Atelier Principal",
+                stat_delivery: "Livraison & Installation",
+                sec_subtitle: "Chefs-d'œuvre Exclusifs",
+                sec_title: "La Collection Souveraine",
+                sec_desc: "Chaque pièce est façonnée à la main avec les bois les plus nobles et des étoffes d'une somptuosité rare. Survolez pour activer l'effet 3D tilt.",
+                filter_all: "Tous les Produits",
+                filter_salons: "Salons Royaux",
+                filter_tv: "Meubles TV & Bois",
+                filter_blinds: "Stores & Rideaux",
+                custom_subtitle: "Sur Mesure d'Exception",
+                custom_title: "Concevez Votre Pièce Unique",
+                custom_desc: "Chez Tapissier Moderne matérialise vos rêves les plus audacieux. Choisissez vos essences de bois précieux, vos étoffes de haute couture et dimensions sur mesure.",
+                feature_wood_title: "Essences de Bois Nobles",
+                feature_wood_desc: "Noyer massif, acajou, chêne de premier choix et bois rouge.",
+                feature_fabric_title: "Étoffes de Haute Couture",
+                feature_fabric_desc: "Velours italien, Mobra anti-taches, Bouclé luxueux et lin brodé.",
+                estimator_title: "Devis & Estimation Instantanée",
+                label_category: "Type de Meuble",
+                label_wood: "Essence de Bois",
+                label_fabric: "Qualité d'Étoffe",
+                est_label: "Estimation Estimée :",
+                btn_command_custom: "Commander sur WhatsApp",
+                about_subtitle: "L'Excellence Artisanale",
+                about_title: "Chez Tapissier Moderne à Mohammedia",
+                about_desc1: "Fondée sur les valeurs de l'artisanat d'art et du design contemporain, notre maison incarne le summum du raffinement au Maroc. Situés à Mohammedia, nous supervisons chaque détail de la conception à la pose finale.",
+                about_desc2: "Qu'il s'agisse de projets résidentiels de prestige ou de villas d'exception, nous assurons une livraison et une installation experte dans toutes les villes du Royaume.",
+                contact_direct: "Ligne Directe Atelier",
+                workshop_loc: "Siège & Showroom",
+                craft_badge: "Savoir-Faire Souverain",
+                footer_desc: "Chez Tapissier Moderne • L'art de sublimer vos espaces intérieurs avec des collections exclusives d'une valeur de 100 millions de dirhams.",
+                footer_links: "Navigation",
+                footer_services: "Services Royaux",
+                footer_contact: "Contact Atelier",
+                delivery_all_morocco: "Livraison dans tout le Maroc",
+                rights: "Tous droits réservés.",
+                cart_title: "Votre Panier VIP",
+                cart_empty: "Votre panier est actuellement vide.",
+                cart_total: "Total Estimé :",
+                cart_checkout: "Commander via WhatsApp (06 56 59 37 54)",
+                lb_fabric: "Tissu :",
+                lb_wood: "Bois :",
+                lb_delivery: "Livraison :",
+                lb_all_morocco: "Tout le Maroc",
+                btn_add_cart: "Ajouter au Panier / Demander"
+            },
+            ar: {
+                subtitle: "chez tapiçier moderne",
+                nav_home: "الرئيسية",
+                nav_collections: "المجموعات الملكية",
+                nav_custom: "تفصيل حسب الطلب",
+                nav_about: "الورشة",
+                nav_contact: "اتصل بنا VIP",
+                hero_badge: "تنجيد ملكي رفيع التصميم • المحمدية",
+                hero_title: "الفخامة المطلقة بأسلوب إمبراطوري",
+                hero_desc: "مجموعة استثنائية بقيمة 100 مليون درهم تعيد تعريف الفخامة المغربية والمعاصرة. تفصيل حصري لدى Chez Tapissier Moderne مع توصيل VIP في جميع أنحاء المغرب.",
+                btn_explore: "استكشف المجموعة",
+                btn_whatsapp: "استشارة VIP (0656593754)",
+                stat_valuation: "قيمة استثنائية",
+                stat_custom: "تفصيل ونجارة ملكية",
+                stat_location: "الورشة الرئيسية",
+                stat_delivery: "التوصيل والتركيب",
+                sec_subtitle: "تحف حصرية",
+                sec_title: "المجموعة السيادية",
+                sec_desc: "كل قطعة مصنوعة يدوياً بأرقى أنواع الأخشاب والأقمشة الفاخرة. مرر مؤشر الماوس لتفعيل تأثير الميل ثلاثي الأبعاد.",
+                filter_all: "جميع المنتجات",
+                filter_salons: "صالونات ملكية",
+                filter_tv: "خزائن التلفزيون والخشب",
+                filter_blinds: "ستائر ومظلات",
+                custom_subtitle: "تفصيل استثنائي",
+                custom_title: "صمم قطعتك الفريدة",
+                custom_desc: "Chez Tapissier Moderne يحقق أحلامك الأكثر جرأة. اختر أجود أنواع الأخشاب، وأقمشة الهاوت كوتور، والأبعاد المخصصة.",
+                feature_wood_title: "أخشاب نبيلة",
+                feature_wood_desc: "جوز صلب، ماهوجني، بلوط فاخر وخشب أحمر.",
+                feature_fabric_title: "أقمشة هوت كوتور",
+                feature_fabric_desc: "مخمل إيطالي، موبرا مضاد للبقع، بوكليه فرنسي.",
+                estimator_title: "عرض سعر فوري",
+                label_category: "نوع الأثاث",
+                label_wood: "نوع الخشب",
+                label_fabric: "نوع القماش",
+                est_label: "السعر التقديري:",
+                btn_command_custom: "اطلب عبر واتساب",
+                about_subtitle: "التميز الحرفي",
+                about_title: "Chez Tapissier Moderne بالمحمدية",
+                about_desc1: "تأسست دارنا على قيم الحرف الفنية والتصميم المعاصر لتجسد قمة الرقي في المغرب. مقرنا في المحمدية ونشرف على كل تفصيل حتى التركيب النهائي.",
+                about_desc2: "سواء للمشاريع السكنية الراقية أو الفيلات الاستثنائية، نضمن التوصيل والتركيب الخبير في جميع مدن المملكة.",
+                contact_direct: "الخط المباشر للورشة",
+                workshop_loc: "المقر وصالة العرض",
+                craft_badge: "مهارة سيادية",
+                footer_desc: "Chez Tapissier Moderne • فن الارتقاء بديكوراتك الداخلية بمجموعات حصرية بقيمة 100 مليون درهم.",
+                footer_links: "التنقل",
+                footer_services: "خدمات ملكية",
+                footer_contact: "اتصل بالورشة",
+                delivery_all_morocco: "التوصيل لجميع مناطق المغرب",
+                rights: "جميع الحقوق محفوظة.",
+                cart_title: "سلة التسوق VIP",
+                cart_empty: "سلة التسوق فارغة حالياً.",
+                cart_total: "المجموع التقديري:",
+                cart_checkout: "اطلب عبر واتساب (0656593754)",
+                lb_fabric: "القماش:",
+                lb_wood: "الخشب:",
+                lb_delivery: "التوصيل:",
+                lb_all_morocco: "جميع أنحاء المغرب",
+                btn_add_cart: "إضافة إلى السلة / طلب"
+            },
+            en: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Home",
+                nav_collections: "100M Collections",
+                nav_custom: "Bespoke",
+                nav_about: "The Atelier",
+                nav_contact: "Contact & VIP",
+                hero_badge: "Haute Upholstery & Royal Design • Mohammedia",
+                hero_title: "Absolute Imperial Elegance",
+                hero_desc: "An exceptional 100-million-dirham collection redefining Moroccan and contemporary luxury. Custom crafted by Chez Tapissier Moderne with VIP delivery across Morocco.",
+                btn_explore: "Explore Collection",
+                btn_whatsapp: "VIP Consultation (06 56 59 37 54)",
+                stat_valuation: "Exceptional Value",
+                stat_custom: "Bespoke & Joinery",
+                stat_location: "Main Atelier",
+                stat_delivery: "Delivery & Fitting",
+                sec_subtitle: "Exclusive Masterpieces",
+                sec_title: "The Sovereign Collection",
+                sec_desc: "Each piece is handcrafted using the finest woods and rarest sumptuous fabrics. Hover to activate 3D tilt effect.",
+                filter_all: "All Products",
+                filter_salons: "Royal Salons",
+                filter_tv: "TV Units & Wood",
+                filter_blinds: "Blinds & Curtains",
+                custom_subtitle: "Bespoke Excellence",
+                custom_title: "Design Your Unique Piece",
+                custom_desc: "Chez Tapissier Moderne materializes your boldest dreams. Choose your precious wood species, haute couture fabrics, and custom dimensions.",
+                feature_wood_title: "Noble Wood Species",
+                feature_wood_desc: "Solid walnut, mahogany, premium oak, and treated red wood.",
+                feature_fabric_title: "Haute Couture Fabrics",
+                feature_fabric_desc: "Italian velvet, stain-resistant Mobra, luxurious Bouclé, and embroidered linen.",
+                estimator_title: "Instant Quote & Estimate",
+                label_category: "Furniture Type",
+                label_wood: "Wood Essence",
+                label_fabric: "Fabric Quality",
+                est_label: "Estimated Price:",
+                btn_command_custom: "Order via WhatsApp",
+                about_subtitle: "Artisanal Excellence",
+                about_title: "Chez Tapissier Moderne in Mohammedia",
+                about_desc1: "Founded on values of fine craftsmanship and contemporary design, our house embodies the pinnacle of refinement in Morocco. Located in Mohammedia, we oversee every detail.",
+                about_desc2: "Whether for prestigious residential projects or exceptional villas, we ensure expert delivery and installation throughout the Kingdom.",
+                contact_direct: "Atelier Direct Line",
+                workshop_loc: "Headquarters & Showroom",
+                craft_badge: "Sovereign Craftsmanship",
+                footer_desc: "Chez Tapissier Moderne • The art of exalting your interior spaces with exclusive collections valued at 100 million dirhams.",
+                footer_links: "Navigation",
+                footer_services: "Royal Services",
+                footer_contact: "Atelier Contact",
+                delivery_all_morocco: "Delivery across Morocco",
+                rights: "All rights reserved.",
+                cart_title: "Your VIP Cart",
+                cart_empty: "Your cart is currently empty.",
+                cart_total: "Estimated Total:",
+                cart_checkout: "Order via WhatsApp (06 56 59 37 54)",
+                lb_fabric: "Fabric:",
+                lb_wood: "Wood:",
+                lb_delivery: "Delivery:",
+                lb_all_morocco: "All Morocco",
+                btn_add_cart: "Add to Cart / Order"
+            },
+            es: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Inicio",
+                nav_collections: "Colecciones 100M",
+                nav_custom: "A Medida",
+                nav_about: "El Taller",
+                nav_contact: "Contacto & VIP",
+                hero_badge: "Alta Tapicería y Diseño Real • Mohammedia",
+                hero_title: "Elegancia Imperial Absoluta",
+                hero_desc: "Una colección excepcional de 100 millones de dirhams que redefine el lujo marroquí y contemporáneo. Confección a medida por Chez Tapissier Moderne con entrega VIP en todo Marruecos.",
+                btn_explore: "Explorar Colección",
+                btn_whatsapp: "Consulta VIP (06 56 59 37 54)",
+                stat_valuation: "Valor Excepcional",
+                stat_custom: "A Medida & Ebanistería",
+                stat_location: "Taller Principal",
+                stat_delivery: "Entrega e Instalación",
+                sec_subtitle: "Obras Maestras Exclusivas",
+                sec_title: "La Colección Soberana",
+                sec_desc: "Cada pieza está hecha a mano con las maderas más nobles y telas de suntuosidad única. Pasa el cursor para activar el efecto inclinación 3D.",
+                filter_all: "Todos los Productos",
+                filter_salons: "Salones Reales",
+                filter_tv: "Muebles TV y Madera",
+                filter_blinds: "Persianas y Cortinas",
+                custom_subtitle: "Excelencia a Medida",
+                custom_title: "Diseña Tu Pieza Única",
+                custom_desc: "Chez Tapissier Moderne materializa tus sueños más audaces. Elige maderas nobles, telas de alta costura y dimensiones personalizadas.",
+                feature_wood_title: "Maderas Nobles",
+                feature_wood_desc: "Nogal macizo, caoba, roble premium y madera roja tratada.",
+                feature_fabric_title: "Telas de Alta Costura",
+                feature_fabric_desc: "Terciopelo italiano, Mobra antimanchas, Bouclé lujoso y lino bordado.",
+                estimator_title: "Presupuesto Instantáneo",
+                label_category: "Tipo de Mueble",
+                label_wood: "Esencia de Madera",
+                label_fabric: "Calidad de Tela",
+                est_label: "Precio Estimado:",
+                btn_command_custom: "Pedir por WhatsApp",
+                about_subtitle: "Excelencia Artesanal",
+                about_title: "Chez Tapissier Moderne en Mohammedia",
+                about_desc1: "Fundada en los valores de la artesanía de arte y diseño contemporáneo, nuestra casa encarna la cumbre del refinamiento en Marruecos.",
+                about_desc2: "Ya sea para proyectos residenciales de prestigio o villas excepcionales, garantizamos una entrega e instalación experta en todo el Reino.",
+                contact_direct: "Línea Directa Taller",
+                workshop_loc: "Sede y Showroom",
+                craft_badge: "Artesanía Soberana",
+                footer_desc: "Chez Tapissier Moderne • El arte de sublimar tus espacios interiores con colecciones exclusivas valoradas en 100 millones de dirhams.",
+                footer_links: "Navegación",
+                footer_services: "Servicios Reales",
+                footer_contact: "Contacto Taller",
+                delivery_all_morocco: "Entrega en todo Marruecos",
+                rights: "Todos los derechos reservados.",
+                cart_title: "Tu Carrito VIP",
+                cart_empty: "Tu carrito está actualmente vacío.",
+                cart_total: "Total Estimado:",
+                cart_checkout: "Pedir por WhatsApp (06 56 59 37 54)",
+                lb_fabric: "Tela:",
+                lb_wood: "Madera:",
+                lb_delivery: "Entrega:",
+                lb_all_morocco: "Todo Marruecos",
+                btn_add_cart: "Añadir al Carrito / Pedir"
+            },
+            it: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Home",
+                nav_collections: "Collezioni 100M",
+                nav_custom: "Su Misura",
+                nav_about: "L'Atelier",
+                nav_contact: "Contatto & VIP",
+                hero_badge: "Alta Tappezzeria e Design Reale • Mohammedia",
+                hero_title: "Eleganza Imperiale Assoluta",
+                hero_desc: "Una collezione eccezionale da 100 milioni di dirham che ridefinisce il lusso marocchino e contemporaneo. Realizzato su misura da Chez Tapissier Moderne con consegna VIP in tutto il Marocco.",
+                btn_explore: "Esplora Collezione",
+                btn_whatsapp: "Consulenza VIP (06 56 59 37 54)",
+                stat_valuation: "Valore Eccezionale",
+                stat_custom: "Su Misura & Falegnameria",
+                stat_location: "Atelier Principale",
+                stat_delivery: "Consegna e Montaggio",
+                sec_subtitle: "Capolavori Esclusivi",
+                sec_title: "La Collezione Sovrana",
+                sec_desc: "Ogni pezzo è fatto a mano con i legni più nobili e tessuti di rara sontuosità. Passa il mouse per attivare l'effetto tilt 3D.",
+                filter_all: "Tutti i Prodotti",
+                filter_salons: "Salotti Reali",
+                filter_tv: "Mobili TV e Legno",
+                filter_blinds: "Tende e Tendaggi",
+                custom_subtitle: "Eccellenza su Misura",
+                custom_title: "Progetta il Tuo Pezzo Unico",
+                custom_desc: "Chez Tapissier Moderne concretizza i tuoi sogni più audaci. Scegli essenze di legno pregiato, tessuti haute couture e dimensioni personalizzate.",
+                feature_wood_title: "Essenze Legnose Nobili",
+                feature_wood_desc: "Noce massiccio, mogano, rovere pregiato e legno rosso trattato.",
+                feature_fabric_title: "Tessuti Haute Couture",
+                feature_fabric_desc: "Velluto italiano, Mobra antimacchia, Bouclé lussuoso e lino ricamato.",
+                estimator_title: "Preventivo Istantaneo",
+                label_category: "Tipo di Mobile",
+                label_wood: "Essenza di Legno",
+                label_fabric: "Qualità del Tessuto",
+                est_label: "Prezzo Stimato:",
+                btn_command_custom: "Ordina su WhatsApp",
+                about_subtitle: "Eccellenza Artigianale",
+                about_title: "Chez Tapissier Moderne a Mohammedia",
+                about_desc1: "Fondata sui valori dell'artigianato d'arte e del design contemporaneo, la nostra casa incarna l'apice della raffinatezza in Marocco.",
+                about_desc2: "Che si tratti di progetti residenziali di prestigio o ville eccezionali, garantiamo consegna e installazione esperta in tutto il Regno.",
+                contact_direct: "Linea Diretta Atelier",
+                workshop_loc: "Sede & Showroom",
+                craft_badge: "Artigianato Sovrano",
+                footer_desc: "Chez Tapissier Moderne • L'arte di esaltare i vostri spazi interni con collezioni esclusive del valore di 100 milioni di dirham.",
+                footer_links: "Navigazione",
+                footer_services: "Servizi Reali",
+                footer_contact: "Contatto Atelier",
+                delivery_all_morocco: "Consegna in tutto il Marocco",
+                rights: "Tutti i diritti riservati.",
+                cart_title: "Il Tuo Carrello VIP",
+                cart_empty: "Il tuo carrello è attualmente vuoto.",
+                cart_total: "Totale Stimato:",
+                cart_checkout: "Ordina via WhatsApp (06 56 59 37 54)",
+                lb_fabric: "Tessuto:",
+                lb_wood: "Legno:",
+                lb_delivery: "Consegna:",
+                lb_all_morocco: "Tutto il Marocco",
+                btn_add_cart: "Aggiungi al Carrello / Ordina"
+            },
+            de: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Startseite",
+                nav_collections: "100M Kollektionen",
+                nav_custom: "Maßanfertigung",
+                nav_about: "Das Atelier",
+                nav_contact: "Kontakt & VIP",
+                hero_badge: "Haute Polsterei & Royal Design • Mohammedia",
+                hero_title: "Absolute Imperiale Eleganz",
+                hero_desc: "Eine außergewöhnliche 100-Millionen-Dirham-Kollektion, die marokkanischen und zeitgenössischen Luxus neu definiert. Maßgefertigt von Chez Tapissier Moderne mit VIP-Lieferung in ganz Marokko.",
+                btn_explore: "Kollektion Entdecken",
+                btn_whatsapp: "VIP-Beratung (06 56 59 37 54)",
+                stat_valuation: "Außergewöhnlicher Wert",
+                stat_custom: "Maßanfertigung & Schreinerei",
+                stat_location: "Hauptatelier",
+                stat_delivery: "Lieferung & Montage",
+                sec_subtitle: "Exklusive Meisterwerke",
+                sec_title: "Die Souveräne Kollektion",
+                sec_desc: "Jedes Stück wird handgefertigt aus edelsten Hölzern und seltensten Stoffen. Bewegen Sie den Mauszeiger für den 3D-Tilt-Effekt.",
+                filter_all: "Alle Produkte",
+                filter_salons: "Königliche Salons",
+                filter_tv: "TV-Möbel & Holz",
+                filter_blinds: "Jalousien & Vorhänge",
+                custom_subtitle: "Maßgeschneiderte Exzellenz",
+                custom_title: "Gestalten Sie Ihr Unikat",
+                custom_desc: "Chez Tapissier Moderne verwirklicht Ihre kühnsten Träume. Wählen Sie kostbare Holzarten, Haute-Couture-Stoffe und individuelle Maße.",
+                feature_wood_title: "Edle Holzarten",
+                feature_wood_desc: "Massiver Nussbaum, Mahagoni, Premium-Eiche und behandeltes Rotholz.",
+                feature_fabric_title: "Haute-Couture-Stoffe",
+                feature_fabric_desc: "Italienischer Samt, schmutzabweisendes Mobra, luxuriöser Bouclé und besticktes Leinen.",
+                estimator_title: "Sofortiges Angebot & Schätzung",
+                label_category: "Möbeltyp",
+                label_wood: "Holzart",
+                label_fabric: "Stoffqualität",
+                est_label: "Geschätzter Preis:",
+                btn_command_custom: "Über WhatsApp Bestellen",
+                about_subtitle: "Handwerkliche Exzellenz",
+                about_title: "Chez Tapissier Moderne in Mohammedia",
+                about_desc1: "Gegründet auf Werten edler Handwerkskunst und zeitgenössischen Designs, verkörpert unser Haus den Gipfel der Raffinesse in Marokko.",
+                about_desc2: "Ob für prestigeträchtige Wohnprojekte oder außergewöhnliche Villen, wir garantieren fachgerechte Lieferung und Montage im ganzen Königreich.",
+                contact_direct: "Atelier Direktleitung",
+                workshop_loc: "Hauptsitz & Showroom",
+                craft_badge: "Souveräne Handwerkskunst",
+                footer_desc: "Chez Tapissier Moderne • Die Kunst, Ihre Innenräume mit exklusiven Sammlungen im Wert von 100 Millionen Dirham zu veredeln.",
+                footer_links: "Navigation",
+                footer_services: "Königliche Dienste",
+                footer_contact: "Atelier Kontakt",
+                delivery_all_morocco: "Lieferung in ganz Marokko",
+                rights: "Alle Rechte vorbehalten.",
+                cart_title: "Ihr VIP-Warenkorb",
+                cart_empty: "Ihr Warenkorb ist derzeit leer.",
+                cart_total: "Geschätzte Gesamtsumme:",
+                cart_checkout: "Über WhatsApp bestellen (06 56 59 37 54)",
+                lb_fabric: "Stoff:",
+                lb_wood: "Holz:",
+                lb_delivery: "Lieferung:",
+                lb_all_morocco: "Ganz Marokko",
+                btn_add_cart: "In den Warenkorb / Bestellen"
+            },
+            nl: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Home",
+                nav_collections: "100M Collecties",
+                nav_custom: "Maatwerk",
+                nav_about: "Het Atelier",
+                nav_contact: "Contact & VIP",
+                hero_badge: "Haute Stoffering & Koninklijk Design • Mohammedia",
+                hero_title: "Absolute Imperiale Elegantie",
+                hero_desc: "Een uitzonderlijke collectie van 100 miljoen dirham die Marokkaanse en hedendaagse luxe opnieuw definieert. Maatwerk door Chez Tapissier Moderne met VIP-levering in heel Marokko.",
+                btn_explore: "Ontdek Collectie",
+                btn_whatsapp: "VIP-Consult (06 56 59 37 54)",
+                stat_valuation: "Uitzonderlijke Waarde",
+                stat_custom: "Maatwerk & Schrijnwerk",
+                stat_location: "Hoofdatelier",
+                stat_delivery: "Levering & Montage",
+                sec_subtitle: "Exclusieve Meesterwerken",
+                sec_title: "De Soevereine Collectie",
+                sec_desc: "Elk stuk is handgemaakt met de edelste houtsoorten en zeldzame stoffen. Beweeg de muis voor het 3D-tilteffect.",
+                filter_all: "Alle Producten",
+                filter_salons: "Koninklijke Salons",
+                filter_tv: "TV-meubels & Hout",
+                filter_blinds: "Jaloezieën & Gordijnen",
+                custom_subtitle: "Maatwerk Excellentie",
+                custom_title: "Ontwerp Uw Unieke Stuk",
+                custom_desc: "Chez Tapissier Moderne maakt uw stoutste dromen waar. Kies kostbare houtsoorten, haute couture stoffen en aangepaste afmetingen.",
+                feature_wood_title: "Ed PYTHONPATH",
+                feature_wood_desc: "Massief notenhout, mahonie, premium eiken en behandeld rood hout.",
+                feature_fabric_title: "Haute Couture Stoffen",
+                feature_fabric_desc: "Italiaans fluweel, vlekbestendig Mobra, luxe Bouclé en geborduurd linnen.",
+                estimator_title: "Directe Offerte & Schatting",
+                label_category: "Meubeltype",
+                label_wood: "Houtsoort",
+                label_fabric: "Stofkwaliteit",
+                est_label: "Geschatte Prijs:",
+                btn_command_custom: "Bestel via WhatsApp",
+                about_subtitle: "Vakmanschap Excellentie",
+                about_title: "Chez Tapissier Moderne in Mohammedia",
+                about_desc1: "Gevestigd op waarden van fijn vakmanschap en eigentijds design, belichaamt ons huis het toppunt van verfijning in Marokko.",
+                about_desc2: "Of het nu gaat om prestigieuze residentiële projecten of uitzonderlijke villa's, wij garanderen deskundige levering en installatie in het hele Koninkrijk.",
+                contact_direct: "Atelier Directe Lijn",
+                workshop_loc: "Hoofdkantoor & Showroom",
+                craft_badge: "Soeverein Vakmanschap",
+                footer_desc: "Chez Tapissier Moderne • De kunst om uw interieur te verheffen met exclusieve collecties ter waarde van 100 miljoen dirham.",
+                footer_links: "Navigatie",
+                footer_services: "Koninklijke Diensten",
+                footer_contact: "Atelier Contact",
+                delivery_all_morocco: "Levering in heel Marokko",
+                rights: "Alle rechten voorbehouden.",
+                cart_title: "Uw VIP Winkelwagen",
+                cart_empty: "Uw winkelwagen is momenteel leeg.",
+                cart_total: "Geschat Totaal:",
+                cart_checkout: "Bestel via WhatsApp (06 56 59 37 54)",
+                lb_fabric: "Stof:",
+                lb_wood: "Hout:",
+                lb_delivery: "Levering:",
+                lb_all_morocco: "Heel Marokko",
+                btn_add_cart: "Toevoegen aan Winkelwagen / Bestellen"
+            },
+            tr: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Ana Sayfa",
+                nav_collections: "100M Koleksiyonlar",
+                nav_custom: "Özel Yapım",
+                nav_about: "Atölye",
+                nav_contact: "İletişim & VIP",
+                hero_badge: "Yüksek Döşeme ve Kraliyet Tasarımı • Mohammedia",
+                hero_title: "Mutlak İmparatorluk Zarafeti",
+                hero_desc: "Fas ve çağdaş lüksü yeniden tanımlayan 100 milyon dirhemlik olağanüstü bir koleksiyon. Fas genelinde VIP teslimat ile Chez Tapissier Moderne tarafından özel olarak üretilmiştir.",
+                btn_explore: "Koleksiyonu Keşfet",
+                btn_whatsapp: "VIP Danışma (06 56 59 37 54)",
+                stat_valuation: "İstisnai Değer",
+                stat_custom: "Özel Yapım & Ahşap İşleri",
+                stat_location: "Ana Atölye",
+                stat_delivery: "Teslimat & Montaj",
+                sec_subtitle: "Özel Başyapıtlar",
+                sec_title: "Egemen Koleksiyon",
+                sec_desc: "Her parça en asil ağaçlar ve nadide kumaşlarla el yapımıdır. 3D eğim etkisini etkinleştirmek için imleci gezdirin.",
+                filter_all: "Tüm Ürünler",
+                filter_salons: "Kraliyet Salonları",
+                filter_tv: "TV Üniteleri & Ahşap",
+                filter_blinds: "Jaluzi & Perdeler",
+                custom_subtitle: "Özel Mükemmellik",
+                custom_title: "Benzersiz Parçanızı Tasarlayın",
+                custom_desc: "Chez Tapissier Moderne en cesur hayallerinizi gerçeğe dönüştürür. Değerli ahşap türlerini, haute couture kumaşları ve özel ölçüleri seçin.",
+                feature_wood_title: "Asil Ahşap Türleri",
+                feature_wood_desc: "Masif ceviz, maun, birinci sınıf meşe ve işlenmiş kırmızı ahşap.",
+                feature_fabric_title: "Haute Couture Kumaşlar",
+                feature_fabric_desc: "İtalyan kadife, leke tutmaz Mobra, lüks Bukle ve nakışlı keten.",
+                estimator_title: "Anında Fiyat Teklifi",
+                label_category: "Mobilya Türü",
+                label_wood: "Ahşap Özü",
+                label_fabric: "Kumaş Kalitesi",
+                est_label: "Tahmini Fiyat:",
+                btn_command_custom: "WhatsApp ile Sipariş Ver",
+                about_subtitle: "Zanaat Mükemmelliği",
+                about_title: "Mohammedia'daki Chez Tapissier Moderne",
+                about_desc1: "Güzel sanatlar ve çağdaş tasarım değerleri üzerine kurulan evimiz, Fas'taki zarafetin zirvesini temsil etmektedir.",
+                about_desc2: "Prestijli konut projeleri veya olağanüstü villalar için Krallık genelinde uzman teslimat ve montaj garantisi veriyoruz.",
+                contact_direct: "Atölye Direkt Hattı",
+                workshop_loc: "Merkez & Showroom",
+                craft_badge: "Egemen Zanaatkarlık",
+                footer_desc: "Chez Tapissier Moderne • 100 milyon dirhem değerindeki özel koleksiyonlarla iç mekanlarınızı yüceltme sanatı.",
+                footer_links: "Navigasyon",
+                footer_services: "Kraliyet Hizmetleri",
+                footer_contact: "Atölye İletişim",
+                delivery_all_morocco: "Fas genelinde teslimat",
+                rights: "Tüm hakları saklıdır.",
+                cart_title: "VIP Sepetiniz",
+                cart_empty: "Sepetiniz şu anda boş.",
+                cart_total: "Tahmini Toplam:",
+                cart_checkout: "WhatsApp ile Sipariş Ver (06 56 59 37 54)",
+                lb_fabric: "Kumaş:",
+                lb_wood: "Ahşap:",
+                lb_delivery: "Teslimat:",
+                lb_all_morocco: "Tüm Fas",
+                btn_add_cart: "Sepete Ekle / Sipariş Ver"
+            },
+            zh: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "首页",
+                nav_collections: "1亿迪拉姆系列",
+                nav_custom: "高级定制",
+                nav_about: "工坊简介",
+                nav_contact: "VIP 联系",
+                hero_badge: "高级软装与皇室设计 • 穆hammedia",
+                hero_title: "绝对的帝国优雅",
+                hero_desc: "价值1亿迪拉姆的非凡系列，重新定义摩洛哥与当代奢华。由 Chez Tapissier Moderne 专属定制，全摩洛哥VIP配送。",
+                btn_explore: "探索系列",
+                btn_whatsapp: "VIP 咨询 (06 56 59 37 54)",
+                stat_valuation: "非凡价值",
+                stat_custom: "定制与木工",
+                stat_location: "主工坊",
+                stat_delivery: "配送与安装",
+                sec_subtitle: "独家杰作",
+                sec_title: "君王系列",
+                sec_desc: "每件作品均采用最高贵的木材与珍稀面料纯手工打造。悬停激活3D立体倾斜效果。",
+                filter_all: "全部产品",
+                filter_salons: "皇室客厅",
+                filter_tv: "电视柜与原木",
+                filter_blinds: "百叶窗与窗帘",
+                custom_subtitle: "卓越定制",
+                custom_title: "设计您的专属杰作",
+                custom_desc: "Chez Tapissier Moderne 将您最大胆的梦想化为现实。挑选珍贵木材、高级定制面料以及定制尺寸。",
+                feature_wood_title: "尊贵木材",
+                feature_wood_desc: "优质实木胡桃木、桃花心木、特选橡木及处理红木。",
+                feature_fabric_title: "高级定制面料",
+                feature_fabric_desc: "意大利丝绒、防污 Mobra、奢华布克莱与刺绣亚麻。",
+                estimator_title: "即时报价与估算",
+                label_category: "家具类型",
+                label_wood: "木材品种",
+                label_fabric: "面料品质",
+                est_label: "预计价格:",
+                btn_command_custom: "通过 WhatsApp 订购",
+                about_subtitle: "卓越工艺",
+                about_title: "位于穆罕默迪耶的 Chez Tapissier Moderne",
+                about_desc1: "建立在精湛工艺与当代设计价值观之上，我们的品牌体现了摩洛哥精致生活的巅峰。",
+                about_desc2: "无论是享有盛誉的住宅项目还是卓越的别墅，我们都确保在整个王国范围内提供专家级的配送与安装。",
+                contact_direct: "工坊直线",
+                workshop_loc: "总部与展厅",
+                craft_badge: "君王工艺",
+                footer_desc: "Chez Tapissier Moderne • 用价值1亿迪拉姆的独家系列升华您的室内空间。",
+                footer_links: "导航",
+                footer_services: "皇室服务",
+                footer_contact: "工坊联系方式",
+                delivery_all_morocco: "全摩洛哥配送",
+                rights: "版权所有。",
+                cart_title: "您的 VIP 购物车",
+                cart_empty: "您的购物车目前为空。",
+                cart_total: "预计总额:",
+                cart_checkout: "通过 WhatsApp 订购 (06 56 59 37 54)",
+                lb_fabric: "面料:",
+                lb_wood: "木材:",
+                lb_delivery: "配送:",
+                lb_all_morocco: "全摩洛哥",
+                btn_add_cart: "加入购物车 / 订购"
+            },
+            zgh: {
+                subtitle: "Chez Tapissier Moderne",
+                nav_home: "Asnubg",
+                nav_collections: "Tigrummin 100M",
+                nav_custom: "S Tarrayt",
+                nav_about: "Tawwurt",
+                nav_contact: "Msaqqar & VIP",
+                hero_badge: "Asfugz Amellal • Mohammedia",
+                hero_title: "Tazuri Tamqqrant",
+                hero_desc: "Tigrummt n 100 imliyn n dirham sɣur Chez Tapissier Moderne s awabeth VIP deg Meṛṛuk akk.",
+                btn_explore: "Ẓeṛ Tigrummin",
+                btn_whatsapp: "Msaqqar VIP (0656593754)",
+                stat_valuation: "Azal Amqqran",
+                stat_custom: "S Tarrayt & Timmuzɣa",
+                stat_location: "Tawwurt Tamenzut",
+                stat_delivery: "Awabeth d Usebded",
+                sec_subtitle: "Tizmilin Timqqranin",
+                sec_title: "Tigrummt Tagldant",
+                sec_desc: "Kraygat tiɣawsa ttwaxdamen s ufus s waddagen d ifarisen iɣaranen.",
+                filter_all: "Akk Tiɣawsiwin",
+                filter_salons: "Isalan Igeldanen",
+                filter_tv: "Tissura n TV",
+                filter_blinds: "Tirukin d Ifileylen",
+                custom_subtitle: "Tarrayt Tamqqrant",
+                custom_title: "Sbadu Tiɣawsa-inek",
+                custom_desc: "Chez Tapissier Moderne yessawaḍ ad issefray iswan-inek.",
+                feature_wood_title: "Ifecka n Wadda",
+                feature_wood_desc: "Nutur, Mahiwin, d Wadda azeggay.",
+                feature_fabric_title: "Ifarisen iɣaranen",
+                feature_fabric_desc: "Velours iyitalian, Mobra, d Bouclé.",
+                estimator_title: "Tasɣunt N Wazza",
+                label_category: "Anaw n Tɣawsa",
+                label_wood: "Anaw n Wadda",
+                label_fabric: "Anaw n Ifarisen",
+                est_label: "Azal Imalay:",
+                btn_command_custom: "Suter s WhatsApp",
+                about_subtitle: "Tizmart n Ufus",
+                about_title: "Chez Tapissier Moderne deg Mohammedia",
+                about_desc1: "Tawwurt-nneɣ tella d tilellit di tẓuri d usbadu amaynu di Meṛṛuk.",
+                about_desc2: "Nessugut awabeth d usebded fessasen deg akk tiɣrmt n Tgelda.",
+                contact_direct: "Asiy n Tawwurt",
+                workshop_loc: "Agejdur d Showroom",
+                craft_badge: "Tizuri Tagldant",
+                footer_desc: "Chez Tapissier Moderne • Tazuri n usebded n tzeɣwin-nk.",
+                footer_links: "Asnubg",
+                footer_services: "Inawen Igeldanen",
+                footer_contact: "Msaqqar Tawwurt",
+                delivery_all_morocco: "Awabeth di Meṛṛuk akk",
+                rights: "Iserfan ttwaḥerzen.",
+                cart_title: "Tasraft VIP",
+                cart_empty: "Tasraft-nwen tella d ilemt.",
+                cart_total: "Akk Azal:",
+                cart_checkout: "Suter s WhatsApp (0656593754)",
+                lb_fabric: "Afaris:",
+                lb_wood: "Wadda:",
+                lb_delivery: "Awabeth:",
+                lb_all_morocco: "Meṛṛuk Akk",
+                btn_add_cart: "Rnu s Tasraft / Suter"
+            }
+        };
+
+        let currentLang = 'fr';
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('currentLangLabel').innerText = lang.toUpperCase();
+            document.getElementById('langDropdown').classList.add('hidden');
+            
+            // Set RTL for Arabic and Zgh
+            if (lang === 'ar' || lang === 'zgh') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.setAttribute('lang', lang);
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.documentElement.setAttribute('lang', lang);
+            }
+
+            // Translate elements with data-i18n
+            const dict = translations[lang] || translations['fr'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerText = dict[key];
+                }
+            });
+
+            // Re-render products to update labels if needed
+            renderProducts(currentFilter);
+        }
+
+        // Toggle Lang Dropdown
+        document.getElementById('langMenuBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('langDropdown').classList.toggle('hidden');
+        });
+        window.addEventListener('click', () => {
+            document.getElementById('langDropdown').classList.add('hidden');
+        });
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // 10+ Luxury Products Data
+        const products = [
+            {
+                id: 1,
+                category: 'salon',
+                title: 'Salon Impérial Majorelle',
+                categoryLabel: 'Salon Royal',
+                fabric: 'Velours Italien & Soie Brodée',
+                wood: 'Noyer Massif Sculpté Main',
+                price: '185,000 MAD',
+                rawPrice: 185000,
+                desc: 'Un salon marocain d\'une somptuosité infinie, associant l\'art ancestral de la sculpture sur noyer et des tissus haute couture italiens. Finition dorure à la feuille d\'or.',
+                image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 2,
+                category: 'tv',
+                title: 'Console & Meuble TV Versailles',
+                categoryLabel: 'Meuble TV & Bois',
+                fabric: 'Finitions Laiton & Cuir pleine fleur',
+                wood: 'Acajou Précieux & Noyer',
+                price: '68,000 MAD',
+                rawPrice: 68000,
+                desc: 'Agencement mural et meuble TV architectural intégrant des panneaux en noyer massif et des inserts en laiton brossé biseauté.',
+                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 3,
+                category: 'salon',
+                title: 'Fauteuil Bergère Souveraine',
+                categoryLabel: 'Fauteuil & Salon',
+                fabric: 'Bouclé Tressé Parisien',
+                wood: 'Chêne Européen Massif',
+                price: '28,500 MAD',
+                rawPrice: 28500,
+                desc: 'Bergère majestueuse au confort ergonomique absolu, tapissée en bouclé tressé haute résistance avec pieds galbés en chêne massif.',
+                image: 'https://images.unsplash.com/photo-1580481077494-e3299acae5c7?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 4,
+                category: 'blind',
+                title: 'Stores Vénitiens & Rideaux Opulence',
+                categoryLabel: 'Stores & Rideaux',
+                fabric: 'Lin Brodé & Velours Occultant',
+                wood: 'Guidage Bois Précieux',
+                price: '34,000 MAD',
+                rawPrice: 34000,
+                desc: 'Système de stores motorisés et double rideaux en lin brodé sur mesure pour villas d’exception et salons de prestige.',
+                image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 5,
+                category: 'salon',
+                title: 'Canapé Modulaire Casablanca Prestige',
+                categoryLabel: 'Salon Royal',
+                fabric: 'Mobra Anti-taches & Velours',
+                wood: 'Structure Bois Rouge Traité',
+                price: '95,000 MAD',
+                rawPrice: 95000,
+                desc: 'Alliance parfaite entre le confort moderne et les lignes épurées du design contemporain. Confection intégrale dans notre atelier de Mohammedia.',
+                image: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 6,
+                category: 'tv',
+                title: 'Bibliothèque Murale & Meuble TV Atlas',
+                categoryLabel: 'Meuble TV & Bois',
+                fabric: 'Éléments en Cuir & Verre Trempé',
+                wood: 'Noyer Massif & Chêne',
+                price: '115,000 MAD',
+                rawPrice: 115000,
+                desc: 'Bibliothèque et meuble TV architectural sur mesure avec éclairage LED encastré et boiseries sculptées à la main.',
+                image: 'https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 7,
+                category: 'salon',
+                title: 'Coussins Royaux & Jetés de Lit Haute Couture',
+                categoryLabel: 'Accessoires & Coussins',
+                fabric: 'Soie Sauvage & Broderie Or',
+                wood: 'Passementerie Artisanale',
+                price: '12,500 MAD',
+                rawPrice: 12500,
+                desc: 'Ensemble de coussins décoratifs et jetés somptueux brodés de fils d\'or, parachevant l\'harmonie de votre salon.',
+                image: 'https://images.unsplash.com/photo-1579656381226-5fc0f0100c3b?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 8,
+                category: 'blind',
+                title: 'Stores Californiens Motorisés VIP',
+                categoryLabel: 'Stores & Rideaux',
+                fabric: 'Tissu Technique Solaire & Velours',
+                wood: 'Caissons Finition Laiton',
+                price: '42,000 MAD',
+                rawPrice: 42000,
+                desc: 'Stores verticaux motorisés haut de gamme pour baies vitrées monumentales, pilotage intelligent et design épuré.',
+                image: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 9,
+                category: 'salon',
+                title: 'Pouf & Ottoman Sultan',
+                categoryLabel: 'Salon Royal',
+                fabric: 'Velours Damassé & Cuir',
+                wood: 'Noyer Sculpté',
+                price: '16,000 MAD',
+                rawPrice: 16000,
+                desc: 'Ottoman capitonné artisanalement avec des boutons recouverts et des pieds sculptés en noyer massif.',
+                image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1000&q=80'
+            },
+            {
+                id: 10,
+                category: 'tv',
+                title: 'Table Basse Design & Console Royale',
+                categoryLabel: 'Meuble TV & Bois',
+                fabric: 'Marbre Noir Marquina & Laiton',
+                wood: 'Noyer Massif Noir',
+                price: '45,000 MAD',
+                rawPrice: 45000,
+                desc: 'Table basse assortie au meuble TV, plateau en marbre véritable et structure géométrique en noyer et laiton.',
+                image: 'https://images.unsplash.com/photo-1533779283484-8ab4940aa78f?auto=format&fit=crop&w=1000&q=80'
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        function filterProducts(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-goldPrimary', 'bg-goldPrimary', 'text-black');
+                btn.classList.add('border-darkBorder', 'bg-darkCard', 'text-gray-300');
+            });
+            event.currentTarget.classList.add('active', 'border-goldPrimary', 'bg-goldPrimary', 'text-black');
+            event.currentTarget.classList.remove('border-darkBorder', 'bg-darkCard', 'text-gray-300');
+            renderProducts(category);
+        }
+
+        function renderProducts(filter) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-3xl overflow-hidden border border-darkBorder flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 group';
+                card.innerHTML = `
+                    <div class="relative overflow-hidden aspect-video cursor-pointer" onclick="openLightbox(${p.id})">
+                        <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/600x400/13131a/d4af37?text=Design+Saada';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-darkBg via-transparent to-transparent opacity-60"></div>
+                        <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-black/70 backdrop-blur-md text-goldPrimary border border-goldPrimary/30">${p.categoryLabel}</span>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-xs">
+                            <span class="px-4 py-2 rounded-xl gold-gradient-bg text-black font-bold text-xs uppercase tracking-wider shadow-lg flex items-center gap-2">
+                                <i class="fas fa-search-plus"></i> Inspecter (Zoom)
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-luxury font-bold text-lg text-white mb-2 group-hover:text-goldPrimary transition-colors">${p.title}</h3>
+                            <p class="text-xs text-gray-400 font-light line-clamp-2 mb-4">${p.desc}</p>
+                            <div class="space-y-1.5 text-xs border-t border-darkBorder pt-3 mb-4">
+                                <div class="flex justify-between"><span class="text-gray-500">Tissu :</span> <span class="text-gray-300 font-medium">${p.fabric}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">Bois :</span> <span class="text-gray-300 font-medium">${p.wood}</span></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-darkBorder">
+                            <div>
+                                <span class="text-[10px] text-gray-500 block uppercase">Prix Indicatif</span>
+                                <span class="text-lg font-luxury font-bold text-goldPrimary">${p.price}</span>
+                            </div>
+                            <button onclick="addToCart(${p.id})" class="px-4 py-2.5 rounded-xl border border-goldPrimary/50 bg-goldPrimary/10 text-goldPrimary font-bold text-xs hover:bg-goldPrimary hover:text-black transition-all flex items-center gap-2">
+                                <i class="fas fa-shopping-bag"></i> <span>Ajouter</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Cart State Management
+        let cart = [];
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+            toggleCart(true);
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cartBadge');
+            const container = document.getElementById('cartItemsContainer');
+            const totalEl = document.getElementById('cartTotalPrice');
+            const emptyMsg = document.getElementById('emptyCartMsg');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            badge.innerText = totalItems;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 py-20">Votre panier est actuellement vide.</div>`;
+                totalEl.innerText = '0 MAD';
+                return;
+            }
+
+            container.innerHTML = '';
+            let totalPrice = 0;
+
+            cart.forEach((item, index) => {
+                totalPrice += item.rawPrice * item.qty;
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between gap-4 p-4 rounded-2xl bg-darkBg border border-darkBorder';
+                div.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-xl border border-goldPrimary/30">
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-white line-clamp-1">${item.title}</h4>
+                        <span class="text-xs text-goldPrimary">${item.price}</span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <button onclick="changeQty(${index}, -1)" class="w-5 h-5 rounded bg-darkCard border border-darkBorder text-xs text-gray-300 flex items-center justify-center">-</button>
+                            <span class="text-xs text-white">${item.qty}</span>
+                            <button onclick="changeQty(${index}, 1)" class="w-5 h-5 rounded bg-darkCard border border-darkBorder text-xs text-gray-300 flex items-center justify-center">+</button>
+                        </div>
+                    </div>
+                    <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-400 p-2"><i class="fas fa-trash text-xs"></i></button>
+                `;
+                container.appendChild(div);
+            });
+
+            totalEl.innerText = totalPrice.toLocaleString() + ' MAD';
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCart(forceOpen = false) {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            if (forceOpen || drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert("Votre panier est vide.");
+                return;
+            }
+            let text = "Bonjour Désign Saâda (Chez Tapissier Moderne), je souhaite commander les articles suivants :\n\n";
+            let total = 0;
+            cart.forEach(item => {
+                text += `- ${item.title} (${item.qty}x) : ${(item.rawPrice * item.qty).toLocaleString()} MAD\n`;
+                total += item.rawPrice * item.qty;
+            });
+            text += `\nTotal Estimé : ${total.toLocaleString()} MAD\nMerci de me contacter pour la livraison VIP au Maroc.`;
+            const encoded = encodeURIComponent(text);
+            window.open(`https://wa.me/212656593754?text=${encoded}`, '_blank');
+        }
+
+        // Lightbox Modal Logic
+        let activeLightboxProduct = null;
+
+        function openLightbox(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            activeLightboxProduct = product;
+            document.getElementById('lightboxImg').src = product.image;
+            document.getElementById('lightboxCategory').innerText = product.categoryLabel;
+            document.getElementById('lightboxTitle').innerText = product.title;
+            document.getElementById('lightboxDesc').innerText = product.desc;
+            document.getElementById('lightboxFabric').innerText = product.fabric;
+            document.getElementById('lightboxWood').innerText = product.wood;
+            document.getElementById('lightboxPrice').innerText = product.price;
+            document.getElementById('lightboxModal').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden');
+        }
+
+        function addLightboxToCart() {
+            if (activeLightboxProduct) {
+                addToCart(activeLightboxProduct.id);
+                closeLightbox();
+            }
+        }
+
+        // Bespoke Customizer Estimator Logic
+        const priceMultipliers = {
+            salon: { base: 35000, wood: { walnut: 1.3, redwood: 1.0, oak: 1.2 }, fabric: { velvet: 1.2, mobra: 1.1, boucle: 1.3 } },
+            tv: { base: 20000, wood: { walnut: 1.3, redwood: 1.0, oak: 1.2 }, fabric: { velvet: 1.1, mobra: 1.0, boucle: 1.2 } },
+            armchair: { base: 12000, wood: { walnut: 1.3, redwood: 1.0, oak: 1.2 }, fabric: { velvet: 1.2, mobra: 1.1, boucle: 1.3 } },
+            blind: { base: 15000, wood: { walnut: 1.2, redwood: 1.0, oak: 1.1 }, fabric: { velvet: 1.3, mobra: 1.1, boucle: 1.2 } }
+        };
+
+        function updateEstimate() {
+            const type = document.getElementById('custType').value;
+            const wood = document.getElementById('custWood').value;
+            const fabric = document.getElementById('custFabric').value;
+
+            const config = priceMultipliers[type] || priceMultipliers.salon;
+            const multW = config.wood[wood] || 1.0;
+            const multF = config.fabric[fabric] || 1.0;
+            const est = Math.round(config.base * multW * multF);
+
+            document.getElementById('estPrice').innerText = est.toLocaleString() + ' MAD';
+        }
+
+        document.getElementById('custType').addEventListener('change', updateEstimate);
+        document.getElementById('custWood').addEventListener('change', updateEstimate);
+        document.getElementById('custFabric').addEventListener('change', updateEstimate);
+
+        function requestBespokeOrder() {
+            const type = document.getElementById('custType').options[document.getElementById('custType').selectedIndex].text;
+            const wood = document.getElementById('custWood').options[document.getElementById('custWood').selectedIndex].text;
+            const fabric = document.getElementById('custFabric').options[document.getElementById('custFabric').selectedIndex].text;
+            const price = document.getElementById('estPrice').innerText;
+
+            const text = `Bonjour Désign Saâda, je souhaite commander une création sur mesure :\n- Type : ${type}\n- Bois : ${wood}\n- Tissu : ${fabric}\n- Prix Estimé : ${price}\nMerci de me recontacter pour finaliser.`;
+            window.open(`https://wa.me/212656593754?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // Three.js Interactive Particle Field Background
+        window.addEventListener('load', () => {
+            renderProducts('all');
+            updateEstimate();
+
+            const container = document.getElementById('three-container');
+            if (!container) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 800;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.03,
+                color: 0xd4af37,
+                transparent: true,
+                opacity: 0.7
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, material);
+            scene.add(particlesMesh);
+
+            camera.position.z = 4;
+
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            window.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - window.innerWidth / 2) / 1000;
+                mouseY = (event.clientY - window.innerHeight / 2) / 1000;
+            });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+
+                targetX = mouseX * 0.5;
+                targetY = mouseY * 0.5;
+
+                particlesMesh.rotation.y = elapsedTime * 0.05 + targetX;
+                particlesMesh.rotation.x = elapsedTime * 0.03 + targetY;
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        });
+    </script>
+</body>
+</html>

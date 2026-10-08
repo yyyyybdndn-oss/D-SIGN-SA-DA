@@ -1,10 +1,12 @@
-# [Project name]
+# DÉSIGN SAÂDA Storefront
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An Arabic-first portfolio and custom-order storefront for a Mohammedia upholstery and modern interior studio.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/design-saada run dev` — run the storefront preview
+- `pnpm --filter @workspace/design-saada run typecheck` — typecheck the storefront
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
@@ -22,23 +24,28 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/design-saada/src/App.tsx` — storefront content, product catalog, filters, quote form, and WhatsApp enquiry flow
+- `artifacts/design-saada/src/index.css` — storefront theme and responsive styling
+- `artifacts/design-saada/public/images/` — supplied brand and project photography
+- `lib/api-spec/openapi.yaml` — shared API contract (the storefront currently does not use the API)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The storefront is a static, client-side experience; product listings and photos are local assets.
+- Made-to-measure enquiries are sent through WhatsApp; the site does not take payment or promise fixed prices.
+- Arabic/RTL is the default, with French and English interface options.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Visitors can browse and filter 18 project examples, zoom photos, prepare WhatsApp enquiries, and send made-to-measure quote requests with dimensions and location.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Use the supplied photos and keep the storefront Arabic-first with right-to-left layout.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Prices are quote-based; do not add fixed prices or business claims that are not confirmed by the owner.
 
 ## Pointers
 
