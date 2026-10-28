@@ -4,9 +4,11 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
+import { ProductCard } from '@/components/product-card';
+import { CATEGORIES, NOMS_CATEGORIES, detailsComplets, produitsDesignSaada, type Categorie, type Produit } from '@/data/produits';
 import {
-  ArrowLeft, ArrowUpLeft, MapPin, Menu, MessageCircle, MoveUpRight, Plus,
-  Ruler, Search, ShoppingBag, X, ZoomIn,
+  ArrowLeft, ArrowUpLeft, MapPin, Menu, MessageCircle, MoveUpRight,
+  Ruler, Search, ShoppingBag, X,
 } from 'lucide-react';
 import {
   Route,
@@ -19,33 +21,11 @@ const queryClient = new QueryClient();
 
 const image = (file: string) => `/images/${file}`;
 const wa = '212656593754';
-type Category = 'salon' | 'wood' | 'curtain' | 'kitchen' | 'chair';
-type Product = { id: number; name: string; description: string; category: Category; categoryName: string; fabric: string; wood: string; price: string; photo: string; alt: string };
-const products: Product[] = [
-  { id: 1, name: 'صالون زاوية بتصميم هادئ', description: 'تكوين رحب بخطوط ناعمة، ينسجم مع تفاصيل الخشب والإضاءة الدافئة.', category: 'salon', categoryName: 'الصالونات', fabric: 'قماش بملمس ناعم', wood: 'تفصيل حسب التصميم', price: 'حسب القياس', photo: 'IMG-20261007-WA0026_1791450825438.jpg', alt: 'صالون زاوية بيج واسع مع جدار خشبي وستائر طويلة' },
-  { id: 2, name: 'وحدة تلفاز بخطوط خشبية', description: 'وحدة جدارية تجمع الخشب والرخام مع رفوف مضاءة بعناية.', category: 'wood', categoryName: 'الخشب والتلفاز', fabric: 'بدون تنجيد', wood: 'خشب وكسوة جدارية', price: 'حسب القياس', photo: 'IMG-20261007-WA0028_1791450715511.jpg', alt: 'وحدة تلفاز عصرية بخلفية رخامية وشرائح خشبية' },
-  { id: 3, name: 'صالون عصري بلمسة دافئة', description: 'جلسة عائلية مريحة بألوان فاتحة ولمسات برتقالية متوازنة.', category: 'salon', categoryName: 'الصالونات', fabric: 'اختيار القماش حسب الطلب', wood: 'تفصيل حسب التصميم', price: 'حسب القياس', photo: 'IMG-20261007-WA0030_1791450825467.jpg', alt: 'صالون عصري بلون عاجي ووسائد برتقالية في غرفة مشرقة' },
-  { id: 4, name: 'ستائر بطبقتين', description: 'طبقة شفافة للضوء الطبيعي مع ستائر جانبية تمنح المكان هدوءاً.', category: 'curtain', categoryName: 'الستائر والديكور', fabric: 'اختيار الأقمشة حسب الطلب', wood: 'قضبان حسب المشروع', price: 'حسب القياس', photo: 'IMG-20261007-WA0032_1791450744898.jpg', alt: 'ستائر رمادية بطبقتين تغطي نافذة غرفة معيشة' },
-  { id: 5, name: 'كراسي استرخاء منحنية', description: 'زوج من الكراسي المستديرة بتفاصيل بسيطة وحضور أنيق.', category: 'chair', categoryName: 'الكراسي', fabric: 'قماش منسوج', wood: 'هيكل بتصميم منحنٍ', price: 'حسب الطلب', photo: 'IMG-20261007-WA0034_1791450825526.jpg', alt: 'كرسيان دائريان منجدان بالأخضر والعاجي مع طاولة صغيرة' },
-  { id: 6, name: 'مطبخ عصري بتفصيل خاص', description: 'توزيع عملي للخزائن والخشب مع درجات رمادية متوازنة.', category: 'kitchen', categoryName: 'المطابخ', fabric: '—', wood: 'خشب وخزائن حسب القياس', price: 'حسب القياس', photo: 'IMG-20261007-WA0036_1791450744788.jpg', alt: 'مطبخ مفصل بخزائن رمادية وخشبية وإضاءة مخفية' },
-  { id: 7, name: 'أريكة مع كرسي بوكليه', description: 'أريكة مريحة وكرسي مستقل بملمس غني وألوان محايدة.', category: 'salon', categoryName: 'الصالونات', fabric: 'قماش بوكليه', wood: 'أرجل خشبية', price: 'حسب القياس', photo: 'IMG-20261007-WA0038_1791450825547.jpg', alt: 'أريكة عاجية وكرسي بوكليه منسق في غرفة دافئة' },
-  { id: 8, name: 'جلسة عائلية وستائر متناسقة', description: 'تكوين واسع بأشكال عضوية وستائر ممتدة من السقف إلى الأرض.', category: 'salon', categoryName: 'الصالونات', fabric: 'قماش بوكليه فاتح', wood: 'تفصيل حسب التصميم', price: 'حسب القياس', photo: 'IMG-20261007-WA0040_1791450804402.jpg', alt: 'جلسة بيضاء منحنية مع ستائر رمادية ممتدة' },
-  { id: 9, name: 'صالون بقطع منفصلة', description: 'جلسة متعددة القطع بخطوط عصرية ووسائد منقوشة.', category: 'salon', categoryName: 'الصالونات', fabric: 'قماش فاتح', wood: 'قواعد خشبية', price: 'حسب القياس', photo: 'IMG-20261007-WA0042_1791450880018.jpg', alt: 'قطع صالون عصرية فاتحة مع وسائد منقوشة وطاولة خشبية' },
-  { id: 10, name: 'صالون عرض بتفاصيل مختلفة', description: 'تنسيق يجمع أكثر من ملمس ولون ضمن مساحة جلوس واحدة.', category: 'salon', categoryName: 'الصالونات', fabric: 'أقمشة متعددة', wood: 'تفصيل حسب التصميم', price: 'حسب الطلب', photo: 'IMG-20261007-WA0046_1791450880053.jpg', alt: 'صالون عرض يجمع كراسي منجدة وأريكة وقطع أثاث خشبية' },
-  { id: 11, name: 'كونسول تلفاز خشبي', description: 'قطعة منخفضة بأبواب خشبية وتفاصيل عملية للمساحة اليومية.', category: 'wood', categoryName: 'الخشب والتلفاز', fabric: 'بدون تنجيد', wood: 'خشب بتشطيب فاتح', price: 'حسب القياس', photo: 'IMG-20261007-WA0048_1791450744826.jpg', alt: 'كونسول تلفاز خشبي فاتح بواجهات وأرفف مفتوحة' },
-  { id: 12, name: 'ستائر رول بتشكيلات متنوعة', description: 'مجموعة نماذج بألوان وشفافية مختلفة لاختيار ما يناسب نافذتك.', category: 'curtain', categoryName: 'الستائر والديكور', fabric: 'أقمشة ستائر متنوعة', wood: 'آلية رول', price: 'حسب القياس', photo: 'IMG-20261007-WA0052_1791450804491.jpg', alt: 'مجموعة من عينات الستائر الرول بدرجات محايدة' },
-  { id: 13, name: 'تسريحة مع مرآة مضاءة', description: 'تسريحة بدرجات هادئة ومرآة بيضاوية بإضاءة محيطية.', category: 'wood', categoryName: 'الخشب والتلفاز', fabric: 'مقعد منجد', wood: 'خزائن وتشطيب حسب الطلب', price: 'حسب القياس', photo: 'IMG-20261007-WA0056_1791450715548.jpg', alt: 'تسريحة بيج مع مرآة مضيئة ومقعد منجد' },
-  { id: 14, name: 'طاولة طعام وكراسي خشبية', description: 'طاولة خشبية ذات شكل عضوي مع كراسٍ منجدة بتفاصيل خشب ظاهرة.', category: 'wood', categoryName: 'الخشب والتلفاز', fabric: 'قماش منجد للكراسي', wood: 'خشب بتصميم عضوي', price: 'حسب الطلب', photo: 'IMG-20261007-WA0021_1791450804458.jpg', alt: 'طاولة طعام خشبية مع كراسي زرقاء منجدة' },
-  { id: 15, name: 'صالون أبيض بتفاصيل عسلية', description: 'أريكة بخياطة دقيقة ووسائد بلون دافئ في غرفة مشرقة.', category: 'salon', categoryName: 'الصالونات', fabric: 'قماش فاتح مع وسائد مميزة', wood: 'تفصيل حسب التصميم', price: 'حسب القياس', photo: 'IMG-20261007-WA0022_1791450804505.jpg', alt: 'أريكة عاجية مع وسائد برتقالية وخلفية خشبية' },
-  { id: 16, name: 'طاولة وسط خشبية', description: 'قطعة وسطية بيضاوية بحواف ناعمة وقاعدة خشبية متينة.', category: 'wood', categoryName: 'الخشب والتلفاز', fabric: '—', wood: 'خشب بتصميم خاص', price: 'حسب الطلب', photo: 'IMG-20261007-WA0020_1791450715293.jpg', alt: 'طاولة وسط بيضاوية من الخشب أمام أريكة فاتحة' },
-  { id: 17, name: 'وحدة تلفاز منخفضة', description: 'تصميم بسيط يجمع واجهة خشبية ورفوفاً عملية.', category: 'wood', categoryName: 'الخشب والتلفاز', fabric: 'بدون تنجيد', wood: 'خشب وتشطيب حسب الطلب', price: 'حسب القياس', photo: 'IMG-20261007-WA0024_1791450744857.jpg', alt: 'وحدة تلفاز خشبية منخفضة بتصميم بسيط' },
-  { id: 18, name: 'صالون مغربي معاصر', description: 'جلسة واسعة بتوزيع متوازن تجمع الراحة مع حضور الخشب.', category: 'salon', categoryName: 'الصالونات', fabric: 'اختيار القماش حسب الطلب', wood: 'تفصيل حسب التصميم', price: 'حسب القياس', photo: 'IMG-20261007-WA0046_1791450880053.jpg', alt: 'صالون مغربي معاصر في مساحة عرض بتفاصيل خشبية' },
-];
 const copy = {
   ar: {
     home:'الرئيسية',collection:'الأعمال',tailor:'التفصيل حسب الطلب',atelier:'عن الأتيليه',contact:'تواصل',badge:'أتيليه تنجيد وديكور • المحمدية',titleA:'مساحة تشبهك،',titleB:'تُصنع بعناية.',lead:'من أول خيط إلى آخر تفصيلة؛ نصنع أثاثاً مفصلاً على قياس بيتك، بذوقك وبخبرة أتيليه محلي في المحمدية.',
     browse:'اكتشف الأعمال',consult:'تحدث مع الأتيليه',portfolio:'نماذج من أعمالنا',galleryTitle:'أثاث له مكانه في بيتك',galleryLead:'تصفّح أعمال الأتيليه، اختر ما يلهمك، وأرسل استفسارك مباشرة عبر واتساب. جميع الأسعار تُحدد بعد معرفة القياسات والاختيارات.',
-    all:'كل الأعمال',salon:'الصالونات',wood:'الخشب والتلفاز',curtain:'الستائر',kitchen:'المطابخ',chair:'الكراسي',find:'ابحث في الأعمال',item:'عملاً',quote:'السعر بعد المعاينة',order:'استفسر عن التفصيل',material:'القماش',timber:'الخشب',
+    all:'الكل',salon:'الصالونات',wood:'الخشب والتلفاز',curtain:'الستائر',kitchen:'المطابخ',chair:'الكراسي',nightstand:'طاولات الليل',bed:'غرف النوم',find:'ابحث في الأعمال',item:'عملاً',quote:'السعر بعد المعاينة',order:'استفسر عن التفصيل',material:'القماش',timber:'الخشب',price:'السعر',zoom:'تكبير صورة',
     craftLabel:'من المحمدية، بتفاصيل منزلية',craftTitle:'عمل يدوي، يبدأ من فكرتك',craftText:'في أتيليه Désign Saâda، تتشكل القطعة حول المساحة التي ستعيش فيها. نناقش التصميم والقماش والقياسات معك قبل بدء التفصيل، ونبقي التواصل مباشراً في كل خطوة.',
     fact1:'المحمدية',fact1b:'مقر الأتيليه',fact2:'على قياسك',fact2b:'تفصيل حسب الطلب',fact3:'تواصل مباشر',fact3b:'عبر واتساب',bespokeTag:'خطوة أولى نحو قطعة خاصة',bespokeTitle:'لنبدأ بالقياسات والفكرة',bespokeText:'أخبرنا عن القطعة ومساحتها والمدينة. هذه المعلومات تساعد الأتيليه على فهم طلبك وتحديد ما يلزم للمتابعة. السعر النهائي عرض خاص بعد مناقشة التفاصيل.',
     type:'نوع العمل',width:'العرض بالسنتيمتر',length:'الطول بالسنتيمتر',city:'المدينة',choose:'اختر نوع العمل',notes:'ملاحظات أو تفاصيل إضافية',quoteOnly:'التسعير يتم بعد مراجعة الطلب',askQuote:'اطلب تقديراً عبر واتساب',
@@ -55,7 +35,7 @@ const copy = {
   fr: {
     home:'Accueil',collection:'Réalisations',tailor:'Sur mesure',atelier:'L’atelier',contact:'Contact',badge:'Atelier de tapisserie • Mohammedia',titleA:'Un intérieur à vous,',titleB:'fait avec soin.',lead:'Du premier fil au dernier détail, nous réalisons des pièces sur mesure, adaptées à votre maison et à vos envies.',
     browse:'Voir les réalisations',consult:'Parler à l’atelier',portfolio:'Le travail de l’atelier',galleryTitle:'Des pièces pensées pour chez vous',galleryLead:'Parcourez nos réalisations et envoyez votre demande sur WhatsApp. Les tarifs sont établis après échange sur les dimensions et les choix.',
-    all:'Tout',salon:'Salons',wood:'Bois & TV',curtain:'Rideaux',kitchen:'Cuisines',chair:'Fauteuils',find:'Rechercher',item:'pièces',quote:'Prix sur devis',order:'Demander un devis',material:'Tissu',timber:'Bois',
+    all:'Tout',salon:'Salons',wood:'Bois & TV',curtain:'Rideaux',kitchen:'Cuisines',chair:'Fauteuils',nightstand:'Tables de chevet',bed:'Chambres',find:'Rechercher',item:'pièces',quote:'Prix sur devis',order:'Demander un devis',material:'Tissu',timber:'Bois',price:'Prix',zoom:'Agrandir',
     craftLabel:'Mohammedia, détails faits maison',craftTitle:'Un travail qui commence par votre idée',craftText:'À l’atelier Désign Saâda, chaque pièce prend forme autour de votre espace. Nous échangeons sur le dessin, les tissus et les mesures avant la fabrication.',
     fact1:'Mohammedia',fact1b:'Atelier local',fact2:'Sur mesure',fact2b:'Selon votre projet',fact3:'Contact direct',fact3b:'Par WhatsApp',bespokeTag:'Votre projet commence ici',bespokeTitle:'Parlons de vos dimensions',bespokeText:'Indiquez la pièce, ses dimensions approximatives et votre ville. Le prix est communiqué sur devis après discussion.',
     type:'Type de projet',width:'Largeur en cm',length:'Longueur en cm',city:'Ville',choose:'Choisir un type',notes:'Notes ou détails',quoteOnly:'Tarif communiqué après étude',askQuote:'Demander une estimation sur WhatsApp',
@@ -65,7 +45,7 @@ const copy = {
   en: {
     home:'Home',collection:'Projects',tailor:'Made to measure',atelier:'The atelier',contact:'Contact',badge:'Upholstery & interiors • Mohammedia',titleA:'A room that feels yours,',titleB:'made with care.',lead:'From the first stitch to the final detail, we make furniture to fit your home, your taste and your space.',
     browse:'Explore the work',consult:'Talk to the atelier',portfolio:'Selected atelier work',galleryTitle:'Furniture made for your home',galleryLead:'Browse the atelier projects and send an enquiry on WhatsApp. Pricing is discussed after dimensions and choices are reviewed.',
-    all:'All projects',salon:'Living rooms',wood:'Wood & TV',curtain:'Curtains',kitchen:'Kitchens',chair:'Chairs',find:'Search projects',item:'projects',quote:'Price on request',order:'Enquire about sizing',material:'Fabric',timber:'Wood',
+    all:'All projects',salon:'Living rooms',wood:'Wood & TV',curtain:'Curtains',kitchen:'Kitchens',chair:'Chairs',nightstand:'Nightstands',bed:'Bedrooms',find:'Search projects',item:'projects',quote:'Price on request',order:'Enquire about sizing',material:'Fabric',timber:'Wood',price:'Price',zoom:'Zoom',
     craftLabel:'From Mohammedia, made for home',craftTitle:'Made by hand, starting with your idea',craftText:'At Désign Saâda, each piece is considered in the context of the home it will live in. We discuss design, fabric and dimensions before making begins.',
     fact1:'Mohammedia',fact1b:'Our atelier',fact2:'Made to measure',fact2b:'For your space',fact3:'Direct contact',fact3b:'On WhatsApp',bespokeTag:'A first step toward something personal',bespokeTitle:'Let’s start with your idea',bespokeText:'Tell us about the piece, approximate dimensions and your city. The final price is provided as a quote after discussing the details.',
     type:'Project type',width:'Width in cm',length:'Length in cm',city:'City',choose:'Choose a project type',notes:'Notes or details',quoteOnly:'Pricing follows a project review',askQuote:'Request an estimate on WhatsApp',
@@ -78,12 +58,12 @@ function openWhatsApp(message: string) { window.open(`https://wa.me/${wa}?text=$
 
 function Home() {
   const [language, setLanguage] = useState<Language>('ar');
-  const [filter, setFilter] = useState<'all' | Category>('all');
+  const [filter, setFilter] = useState<'all' | Categorie>('all');
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState<number[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [zoomed, setZoomed] = useState<Product | null>(null);
+  const [zoomed, setZoomed] = useState<Produit | null>(null);
   const [customType, setCustomType] = useState('');
   const [width, setWidth] = useState('');
   const [length, setLength] = useState('');
@@ -91,12 +71,14 @@ function Home() {
   const [notes, setNotes] = useState('');
   const t = copy[language];
   const rtl = language === 'ar';
-  const visibleProducts = useMemo(() => products.filter((product) => {
-    const matchesFilter = filter === 'all' || product.category === filter;
+  const visibleProducts = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
-    return matchesFilter && (!query || `${product.name} ${product.description} ${product.categoryName}`.toLocaleLowerCase().includes(query));
-  }), [filter, search]);
-  const cartProducts = cart.map((id) => products.find((product) => product.id === id)).filter((product): product is Product => Boolean(product));
+    return produitsDesignSaada.filter((produit) => {
+      const matchesFilter = filter === 'all' || produit.categorie === filter;
+      return matchesFilter && (!query || `${produit.nom} ${produit.description} ${NOMS_CATEGORIES[produit.categorie]} ${copy[language][produit.categorie]}`.toLocaleLowerCase().includes(query));
+    });
+  }, [filter, search, language]);
+  const cartProducts = cart.map((id) => produitsDesignSaada.find((produit) => produit.id === id)).filter((produit): produit is Produit => Boolean(produit));
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = rtl ? 'rtl' : 'ltr';
@@ -109,7 +91,7 @@ function Home() {
   const sendCustomQuote = () => openWhatsApp(`السلام عليكم، أود الاستفسار عن تفصيل حسب الطلب.\nنوع العمل: ${customType || 'غير محدد'}\nالقياسات التقريبية: ${width || 'غير محدد'} × ${length || 'غير محدد'} سم\nالمدينة: ${city || 'غير محددة'}\nملاحظات: ${notes || 'لا توجد'}\nالمرجو تزويدي بعرض سعر بعد مناقشة التفاصيل.`);
   const sendCart = () => {
     if (!cartProducts.length) return;
-    const list = cartProducts.map((product, index) => `${index + 1}. ${product.name} — ${product.price}`).join('\n');
+    const list = cartProducts.map((product, index) => `${index + 1}. ${product.nom} — ${detailsComplets(product).prix}`).join('\n');
     openWhatsApp(`السلام عليكم، أود الاستفسار عن تفصيل الأعمال التالية:\n${list}\n\nالمرجو التواصل لمناقشة القياسات والتفاصيل. الأسعار حسب عرض خاص ولا يوجد دفع عبر الموقع.`);
   };
   const navLinks = [{ href: '#home', label: t.home }, { href: '#gallery', label: t.collection }, { href: '#custom', label: t.tailor }, { href: '#about', label: t.atelier }];
@@ -128,11 +110,24 @@ function Home() {
         {mobileOpen && <nav className="mobile-panel" aria-label="التنقل" data-testid="nav-mobile">{navLinks.map((link) => <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>{link.label}</a>)}<a href="#contact" onClick={() => setMobileOpen(false)}>{t.contact}</a></nav>}
       </header>
       <main>
-        <section className="hero" id="home" aria-labelledby="hero-title"><div className="hero-image"><img src={image('IMG-20261007-WA0026_1791450825438.jpg')} alt="صالون زاوية منجز بألوان طبيعية وتفاصيل خشبية في منزل واسع" /></div><div className="hero-inner"><div className="hero-copy"><div className="eyebrow">{t.badge}</div><h1 id="hero-title">{t.titleA}<span>{t.titleB}</span></h1><p className="hero-lede">{t.lead}</p><div className="hero-ctas"><a className="btn btn-gold" href="#gallery" data-testid="link-explore">{t.browse}<ArrowLeft size={17} /></a><button className="btn btn-outline" type="button" onClick={() => openWhatsApp('السلام عليكم، أود أخذ استشارة حول أثاث وتنجيد منزلي.')} data-testid="button-hero-whatsapp"><MessageCircle size={17} />{t.consult}</button></div><div className="hero-foot"><span className="line" /><span>{t.portfolio}</span><span className="hero-number">01 — 18</span></div></div></div></section>
+        <section className="hero" id="home" aria-labelledby="hero-title"><div className="hero-image"><img src={image('IMG-20261007-WA0026_1791450825438.jpg')} alt="صالون زاوية منجز بألوان طبيعية وتفاصيل خشبية في منزل واسع" /></div><div className="hero-inner"><div className="hero-copy"><div className="eyebrow">{t.badge}</div><h1 id="hero-title">{t.titleA}<span>{t.titleB}</span></h1><p className="hero-lede">{t.lead}</p><div className="hero-ctas"><a className="btn btn-gold" href="#gallery" data-testid="link-explore">{t.browse}<ArrowLeft size={17} /></a><button className="btn btn-outline" type="button" onClick={() => openWhatsApp('السلام عليكم، أود أخذ استشارة حول أثاث وتنجيد منزلي.')} data-testid="button-hero-whatsapp"><MessageCircle size={17} />{t.consult}</button></div><div className="hero-foot"><span className="line" /><span>{t.portfolio}</span><span className="hero-number">01 — {String(produitsDesignSaada.length).padStart(2, '0')}</span></div></div></div></section>
         <section className="section catalog" id="gallery" aria-labelledby="gallery-title"><div className="section-inner">
           <div className="section-heading"><div><div className="section-kicker">{t.portfolio}</div><h2 id="gallery-title">{t.galleryTitle}</h2></div><p>{t.galleryLead}</p></div>
-          <div className="filter-row" role="group" aria-label="تصفية الأعمال">{(['all','salon','wood','curtain','kitchen','chair'] as const).map((key) => <button key={key} type="button" className={`filter-btn${filter === key ? ' active' : ''}`} onClick={() => setFilter(key)} aria-pressed={filter === key} data-testid={`filter-${key}`}>{key === 'all' ? t.all : t[key]}</button>)}<div className="catalog-tools"><label className="search-box"><Search size={15} aria-hidden="true" /><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.find} aria-label={t.find} data-testid="input-search-projects" /></label><span className="result-count" aria-live="polite" data-testid="text-project-count">{visibleProducts.length} {t.item}</span></div></div>
-          <div className="products-grid" data-testid="grid-products">{visibleProducts.length ? visibleProducts.map((product) => <article className="product-card" key={product.id} data-testid={`card-product-${product.id}`}><div className="product-media"><img src={image(product.photo)} alt={product.alt} loading={product.id > 3 ? 'lazy' : 'eager'} /><button className="zoom-btn" type="button" onClick={() => setZoomed(product)} aria-label={`تكبير صورة ${product.name}`} data-testid={`button-zoom-${product.id}`}><ZoomIn size={17} /></button><span className="product-number">{String(product.id).padStart(2,'0')}</span></div><div className="product-info"><span className="product-category">{product.categoryName}</span><h3>{product.name}</h3><p>{product.description}</p><div className="product-spec"><span>{t.material}</span><strong>{product.fabric}</strong></div><div className="product-spec"><span>{t.timber}</span><strong>{product.wood}</strong></div><div className="product-price"><span className="price-label">{t.quote}</span><span className="price-value">{product.price}</span></div><button className="add-btn" type="button" onClick={() => { setCart((previous) => [...previous, product.id]); setCartOpen(true); }} data-testid={`button-enquire-${product.id}`}><Plus size={16} />{t.order}</button></div></article>) : <div className="no-results" data-testid="status-no-results">{t.empty}</div>}</div>
+          <div className="filter-row" role="group" aria-label="تصفية الأعمال">{(['all', ...CATEGORIES] as const).map((key) => <button key={key} type="button" className={`filter-btn${filter === key ? ' active' : ''}`} onClick={() => setFilter(key)} aria-pressed={filter === key} data-testid={`filter-${key}`}>{key === 'all' ? t.all : t[key]}</button>)}<div className="catalog-tools"><label className="search-box"><Search size={15} aria-hidden="true" /><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.find} aria-label={t.find} data-testid="input-search-projects" /></label><span className="result-count" aria-live="polite" data-testid="text-project-count">{visibleProducts.length} {t.item}</span></div></div>
+          {visibleProducts.length ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6" data-testid="grid-products">
+              {visibleProducts.map((produit, index) => (
+                <ProductCard
+                  key={produit.id}
+                  produit={produit}
+                  index={index}
+                  labels={{ category: t[produit.categorie], fabric: t.material, wood: t.timber, price: t.price, enquire: t.order, zoom: t.zoom }}
+                  onZoom={setZoomed}
+                  onEnquire={(selected) => { setCart((previous) => [...previous, selected.id]); setCartOpen(true); }}
+                />
+              ))}
+            </div>
+          ) : <div className="no-results" data-testid="status-no-results">{t.empty}</div>}
         </div></section>
         <section className="section story" id="about" aria-labelledby="about-title"><div className="section-inner story">
           <div className="story-visual"><div className="story-photo"><img src={image('IMG-20261007-WA0046_1791450880053.jpg')} alt="جلسة منجزة بأقمشة متنوعة وقطع جلوس من تصميم الأتيليه" loading="lazy" /></div><div className="story-inset"><img src={image('IMG-20261007-WA0019_1791450693844.jpg')} alt={t.aboutImage} loading="lazy" /></div><div className="story-caption">{language === 'ar' ? 'حرفة محلية • المحمدية' : language === 'fr' ? 'Atelier local • Mohammedia' : 'Local craft • Mohammedia'}</div></div>
@@ -141,7 +136,7 @@ function Home() {
         <section className="section bespoke" id="custom" aria-labelledby="custom-title"><div className="section-inner bespoke-grid">
           <div className="bespoke-copy"><div className="section-kicker">{t.bespokeTag}</div><h2 id="custom-title">{t.bespokeTitle}</h2><p>{t.bespokeText}</p><div className="bespoke-note"><Ruler size={19} /><span>{t.quoteOnly}</span></div></div>
           <form className="estimate" onSubmit={(event) => { event.preventDefault(); sendCustomQuote(); }}><h3>{t.tailor}</h3><div className="form-grid">
-            <div className="form-field full"><label htmlFor="project-type">{t.type}</label><select id="project-type" value={customType} onChange={(event) => setCustomType(event.target.value)} data-testid="select-project-type"><option value="">{t.choose}</option>{[t.salon,t.wood,t.curtain,t.kitchen,t.chair].map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+            <div className="form-field full"><label htmlFor="project-type">{t.type}</label><select id="project-type" value={customType} onChange={(event) => setCustomType(event.target.value)} data-testid="select-project-type"><option value="">{t.choose}</option>{CATEGORIES.map((key) => t[key]).map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
             <div className="form-field"><label htmlFor="project-width">{t.width}</label><input id="project-width" inputMode="decimal" type="number" min="1" value={width} onChange={(event) => setWidth(event.target.value)} placeholder="—" data-testid="input-width" /></div>
             <div className="form-field"><label htmlFor="project-length">{t.length}</label><input id="project-length" inputMode="decimal" type="number" min="1" value={length} onChange={(event) => setLength(event.target.value)} placeholder="—" data-testid="input-length" /></div>
             <div className="form-field full"><label htmlFor="project-city">{t.city}</label><input id="project-city" value={city} onChange={(event) => setCity(event.target.value)} placeholder="Mohammedia" data-testid="input-city" /></div>
@@ -154,10 +149,10 @@ function Home() {
       <footer className="footer"><div className="footer-inner"><div><a className="brand" href="#home"><span className="brand-mark"><img src={image('IMG-20261007-WA0033_1791450693805.jpg')} alt="" /></span><span><span className="brand-name">DÉSIGN SAÂDA</span><span className="brand-sub">Chez Tapissier Moderne</span></span></a><p>{language === 'ar' ? 'أتيليه محلي للتنجيد والأثاث المفصل في المحمدية.' : language === 'fr' ? 'Atelier de tapisserie et de mobilier sur mesure à Mohammedia.' : 'A local upholstery and made-to-measure furniture atelier in Mohammedia.'}</p></div><div className="footer-links">{navLinks.map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}<a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer">WhatsApp</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} DÉSIGN SAÂDA</span><span>{language === 'ar' ? 'المحمدية، المغرب' : language === 'fr' ? 'Mohammedia, Maroc' : 'Mohammedia, Morocco'}</span></div></footer>
       {cartOpen && <><button className="drawer-scrim" type="button" aria-label="إغلاق قائمة الاستفسارات" onClick={() => setCartOpen(false)} /><aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" data-testid="drawer-enquiry-list">
         <div className="drawer-head"><h2 id="cart-title">{t.cart} <span>({cart.length})</span></h2><button className="close-btn" type="button" onClick={() => setCartOpen(false)} aria-label="إغلاق"><X size={20} /></button></div>
-        <div className="cart-body">{cartProducts.length === 0 ? <div className="empty-cart"><div><ShoppingBag size={29} /><p>{t.emptyCart}</p></div></div> : cartProducts.map((product,index) => <div className="cart-item" key={`${product.id}-${index}`}><img src={image(product.photo)} alt={product.alt} /><div><h3>{product.name}</h3><p>{product.price}</p></div><button className="remove-btn" type="button" onClick={() => setCart((previous) => previous.filter((_,i) => i !== index))} aria-label={`${t.remove}: ${product.name}`} data-testid={`button-remove-${index}`}><X size={17} /></button></div>)}</div>
+        <div className="cart-body">{cartProducts.length === 0 ? <div className="empty-cart"><div><ShoppingBag size={29} /><p>{t.emptyCart}</p></div></div> : cartProducts.map((product,index) => <div className="cart-item" key={`${product.id}-${index}`}><img src={image(product.image)} alt={product.alt} /><div><h3>{product.nom}</h3><p>{detailsComplets(product).prix}</p></div><button className="remove-btn" type="button" onClick={() => setCart((previous) => previous.filter((_,i) => i !== index))} aria-label={`${t.remove}: ${product.nom}`} data-testid={`button-remove-${index}`}><X size={17} /></button></div>)}</div>
         <div className="drawer-footer"><p>{t.cartHint}</p><button className="btn btn-gold" type="button" onClick={sendCart} disabled={!cartProducts.length} data-testid="button-send-list"><MessageCircle size={18} />{t.sendList}</button></div>
       </aside></>}
-      {zoomed && <div className="lightbox-scrim" role="presentation" onClick={() => setZoomed(null)} data-testid="modal-image-zoom"><div className="lightbox" role="dialog" aria-modal="true" aria-label={zoomed.name} onClick={(event) => event.stopPropagation()}><button className="close-btn" type="button" onClick={() => setZoomed(null)} aria-label="إغلاق تكبير الصورة"><X size={20} /></button><img src={image(zoomed.photo)} alt={zoomed.alt} /></div></div>}
+      {zoomed && <div className="lightbox-scrim" role="presentation" onClick={() => setZoomed(null)} data-testid="modal-image-zoom"><div className="lightbox" role="dialog" aria-modal="true" aria-label={zoomed.nom} onClick={(event) => event.stopPropagation()}><button className="close-btn" type="button" onClick={() => setZoomed(null)} aria-label="إغلاق تكبير الصورة"><X size={20} /></button><img src={image(zoomed.image)} alt={zoomed.alt} /></div></div>}
     </div>
   );
 }
